@@ -10,7 +10,17 @@ window.COURSE_DATA = {
       "accent": "blue",
       "level": "A1–A2",
       "intro": "Đi từ cấu trúc câu, do/does đến các thì nền tảng. Mỗi bài có phần giải thích sâu, lỗi thường gặp và bộ luyện tập dài.",
-      "weeks": "Tuần 1–4"
+      "weeks": "Tuần 1–4",
+      "sources": [
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ],
+        [
+          "Cambridge English – Activities for Learners",
+          "https://www.cambridgeenglish.org/learning-english/activities-for-learners/"
+        ]
+      ]
     },
     {
       "id": "en-context",
@@ -22,7 +32,17 @@ window.COURSE_DATA = {
       "accent": "purple",
       "level": "A2–B1",
       "intro": "Học cách dùng từ trong ngữ cảnh thật, đọc hiểu ngắn và phản xạ bằng câu của chính mình.",
-      "weeks": "Tuần 5–8"
+      "weeks": "Tuần 5–8",
+      "sources": [
+        [
+          "Cambridge English – Learning English",
+          "https://www.cambridgeenglish.org/learning-english/"
+        ],
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ]
+      ]
     },
     {
       "id": "zh-core",
@@ -34,7 +54,25 @@ window.COURSE_DATA = {
       "accent": "rose",
       "level": "Beginner",
       "intro": "Xây nền tảng âm thanh và câu cơ bản tiếng Trung. Mỗi bài có lý thuyết, ví dụ và luyện tập nhiều dạng.",
-      "weeks": "Tuần 1–4"
+      "weeks": "Tuần 1–4",
+      "sources": [
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ],
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "HSK official information",
+          "https://www.chinesetest.cn/HSK"
+        ]
+      ]
     },
     {
       "id": "zh-daily",
@@ -46,7 +84,21 @@ window.COURSE_DATA = {
       "accent": "mint",
       "level": "Beginner+",
       "intro": "Mở rộng giao tiếp hằng ngày bằng số đếm, thời gian, câu hỏi và mẫu đối thoại đơn giản.",
-      "weeks": "Tuần 5–8"
+      "weeks": "Tuần 5–8",
+      "sources": [
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ]
+      ]
     },
     {
       "id": "med-queue",
@@ -435,6 +487,45 @@ window.COURSE_DATA = {
           ],
           "Hãy tự truy xuất mà không nhìn lại bài."
         ]
+      ],
+      "sources": [
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ],
+        [
+          "Cambridge English – Activities for Learners",
+          "https://www.cambridgeenglish.org/learning-english/activities-for-learners/"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Phân biệt được Subject, Verb, Object/Complement.",
+        "Nhận ra lỗi đảo trật tự kiểu dịch từ tiếng Việt.",
+        "Tạo được ít nhất 2 câu đúng trật tự."
+      ],
+      "examples": [
+        [
+          "Đúng",
+          "I study English every day."
+        ],
+        [
+          "Sai",
+          "I every day study English."
+        ],
+        [
+          "Đúng",
+          "She is a student."
+        ],
+        [
+          "Sai",
+          "She a student is."
+        ]
       ]
     },
     {
@@ -819,6 +910,45 @@ window.COURSE_DATA = {
           ],
           "Hãy tự truy xuất mà không nhìn lại bài."
         ]
+      ],
+      "sources": [
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ],
+        [
+          "Cambridge English – Activities for Learners",
+          "https://www.cambridgeenglish.org/learning-english/activities-for-learners/"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Chọn đúng do/does theo chủ ngữ.",
+        "Giữ động từ nguyên mẫu sau do/does.",
+        "Tạo được câu hỏi yes/no và WH-question cơ bản."
+      ],
+      "examples": [
+        [
+          "Đúng",
+          "What does notion mean?"
+        ],
+        [
+          "Sai",
+          "What does notion means?"
+        ],
+        [
+          "Đúng",
+          "Does she study English?"
+        ],
+        [
+          "Sai",
+          "Does she studies English?"
+        ]
       ]
     },
     {
@@ -1186,6 +1316,45 @@ window.COURSE_DATA = {
           "Ôn lại nhanh: “every day” tương ứng với “dấu hiệu thường gặp của thói quen”.",
           true,
           "Đây là câu ôn tập nhanh để củng cố trí nhớ."
+        ]
+      ],
+      "sources": [
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ],
+        [
+          "Cambridge English – Activities for Learners",
+          "https://www.cambridgeenglish.org/learning-english/activities-for-learners/"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Phân biệt thói quen và hành động đang diễn ra.",
+        "Dùng đúng present simple và present continuous ở mức cơ bản.",
+        "Nhận ra động từ trạng thái không phù hợp với dạng tiếp diễn trong ví dụ nền tảng."
+      ],
+      "examples": [
+        [
+          "Đúng",
+          "She runs every morning."
+        ],
+        [
+          "Đúng",
+          "She is running now."
+        ],
+        [
+          "Sai",
+          "I am know the answer."
+        ],
+        [
+          "Đúng",
+          "I know the answer."
         ]
       ]
     },
@@ -1568,6 +1737,45 @@ window.COURSE_DATA = {
           ],
           "Hãy tự truy xuất mà không nhìn lại bài."
         ]
+      ],
+      "sources": [
+        [
+          "Cambridge English – Learning English",
+          "https://www.cambridgeenglish.org/learning-english/"
+        ],
+        [
+          "British Council LearnEnglish – Grammar",
+          "https://learnenglish.britishcouncil.org/free-resources/grammar"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Biết học từ qua ngữ cảnh thay vì dịch rời rạc.",
+        "Nhận ra 4–5 collocation cơ bản.",
+        "Tự chọn được từ phù hợp trong ngữ cảnh."
+      ],
+      "examples": [
+        [
+          "Tự nhiên",
+          "maintain a habit"
+        ],
+        [
+          "Tự nhiên",
+          "sustain growth"
+        ],
+        [
+          "Tự nhiên",
+          "retain information"
+        ],
+        [
+          "Không tự nhiên",
+          "sustain my car"
+        ]
       ]
     },
     {
@@ -1933,6 +2141,53 @@ window.COURSE_DATA = {
             "thanh 1"
           ],
           "Hãy tự truy xuất mà không nhìn lại bài."
+        ]
+      ],
+      "sources": [
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ],
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "HSK official information",
+          "https://www.chinesetest.cn/HSK"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Nhận diện được 4 thanh điệu cơ bản qua ký hiệu.",
+        "Không nhầm vai trò của Pinyin với chữ Hán.",
+        "Biết rằng thanh 3 và thanh nhẹ cần nghe mẫu thật để hoàn thiện phát âm."
+      ],
+      "examples": [
+        [
+          "Thanh 1",
+          "mā"
+        ],
+        [
+          "Thanh 2",
+          "má"
+        ],
+        [
+          "Thanh 3",
+          "mǎ"
+        ],
+        [
+          "Thanh 4",
+          "mà"
         ]
       ]
     },
@@ -2302,6 +2557,53 @@ window.COURSE_DATA = {
             "bạn"
           ],
           "Hãy thử truy xuất thông tin mà không nhìn đáp án."
+        ]
+      ],
+      "sources": [
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ],
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "HSK official information",
+          "https://www.chinesetest.cn/HSK"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Nhớ được 你 / 我 / 是 / 叫.",
+        "Dùng được mẫu 我叫… và 我是学生。",
+        "Hiểu được câu hỏi 你叫什么名字？"
+      ],
+      "examples": [
+        [
+          "Mẫu câu",
+          "我叫小明。"
+        ],
+        [
+          "Mẫu câu",
+          "我是学生。"
+        ],
+        [
+          "Câu hỏi",
+          "你叫什么名字？"
+        ],
+        [
+          "Chào hỏi",
+          "你好！"
         ]
       ]
     },
@@ -2676,6 +2978,53 @@ window.COURSE_DATA = {
           ],
           "Hãy tự truy xuất mà không nhìn lại bài."
         ]
+      ],
+      "sources": [
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ],
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "HSK official information",
+          "https://www.chinesetest.cn/HSK"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Phân biệt 是, 不是, 吗.",
+        "Tạo được câu khẳng định, phủ định và câu hỏi yes/no.",
+        "Đặt 吗 đúng vị trí cuối câu."
+      ],
+      "examples": [
+        [
+          "Khẳng định",
+          "我是学生。"
+        ],
+        [
+          "Phủ định",
+          "我不是老师。"
+        ],
+        [
+          "Câu hỏi",
+          "你是学生吗？"
+        ],
+        [
+          "Sai chỗ",
+          "你吗是学生？"
+        ]
       ]
     },
     {
@@ -3044,6 +3393,49 @@ window.COURSE_DATA = {
             "3 giờ"
           ],
           "Hãy thử truy xuất thông tin mà không nhìn đáp án."
+        ]
+      ],
+      "sources": [
+        [
+          "Global Chinese Learning Platform",
+          "https://www.chinese-learning.cn/"
+        ],
+        [
+          "ChinesePlus MOOC",
+          "https://mooc.chineseplus.net/"
+        ],
+        [
+          "Chinese Grammar Wiki",
+          "https://resources.allsetlearning.com/chinese/grammar/Main_Page"
+        ]
+      ],
+      "takeaways": [
+        "Nắm được khái niệm cốt lõi bằng lời của chính bạn.",
+        "Nhận ra lỗi điển hình của người Việt khi học nội dung này.",
+        "Làm được bộ luyện đa dạng và đạt tối thiểu 80%.",
+        "Rút ra 1–2 ghi chú cá nhân để ôn lại sau."
+      ],
+      "checklist": [
+        "Nhớ số 1–10 ở mức cơ bản.",
+        "Hỏi và nói được giờ đơn giản với 点.",
+        "Dùng thời gian trong câu rất ngắn về lịch học."
+      ],
+      "examples": [
+        [
+          "Hỏi giờ",
+          "现在几点？"
+        ],
+        [
+          "Trả lời",
+          "现在三点。"
+        ],
+        [
+          "Từ số",
+          "一、三、五、十"
+        ],
+        [
+          "Ứng dụng",
+          "我七点学习中文。"
         ]
       ]
     }
