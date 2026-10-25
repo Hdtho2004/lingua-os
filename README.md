@@ -1,44 +1,48 @@
-# Lingua OS — Personal Learning Journey
+# Lingua OS v2.0 — Thọ & Thương
 
-Web app **100% tĩnh**, không cần backend, database trả phí hay API key. Tối ưu cho lịch 120 phút/ngày: **English 72 phút (60%)** và **Mandarin 48 phút (40%)**.
+Web app thuần HTML/CSS/JavaScript, miễn phí và không yêu cầu máy chủ/API trả phí.
 
-## Có gì trong MVP?
-- Dashboard responsive cho mobile và desktop.
-- Kế hoạch học 7 ngày, đánh dấu nhiệm vụ và thống kê tiến độ.
-- Flashcards tiếng Anh / Trung, lịch ôn cách quãng đơn giản theo hiệu suất.
-- Nhật ký lỗi / bài học / mục tiêu.
-- IndexedDB trên thiết bị, xuất / nhập JSON để sao lưu.
-- PWA và service worker giúp mở lại khi offline sau lần tải đầu tiên.
-- Không tracking, không analytics, không AI API trả phí.
+## Có gì trong bản này?
+- Hai hồ sơ độc lập: **Thọ** (tiếng Anh, tiếng Trung) và **Thương** (Y đa khoa).
+- Dashboard, học phần, bài đọc, kiểm tra trắc nghiệm, lịch sử làm bài, ôn flashcards, ghi chú, thống kê.
+- **Không có checkbox hoàn thành thủ công**: bài học chỉ hoàn thành khi nộp đủ câu trả lời và đạt ngưỡng điểm (mặc định 80%). Khi đạt mới tạo flashcards.
+- Tạo bài học thủ công; nhập bộ học liệu JSON để mở rộng sau khi người dùng gửi giáo trình.
+- Đính kèm và lưu tài liệu tham khảo dạng file trong IndexedDB (khuyến nghị file dưới 8 MB; giới hạn bộ nhớ trình duyệt có thể khác nhau).
+- Sao lưu và khôi phục JSON gồm hai hồ sơ và tệp đính kèm. Chưa có đồng bộ tự động giữa các thiết bị.
+- Offline cache cơ bản sau khi mở website lần đầu bằng HTTPS.
 
-## Chạy trên máy
-Không cần cài package:
+## Chạy thử
+Dùng một máy chủ tĩnh tại thư mục dự án:
 
 ```bash
-cd lingua-os
 python -m http.server 8000
 ```
 
-Mở `http://localhost:8000` trong Chrome/Edge/Firefox. Không nên mở trực tiếp `index.html` bằng `file://` vì IndexedDB và service worker có thể hoạt động không ổn định.
+Mở http://localhost:8000. Không nên mở trực tiếp file:/// vì service worker/IndexedDB có thể hoạt động khác nhau.
 
-## Đưa lên GitHub Pages miễn phí
-1. Tạo tài khoản GitHub nếu chưa có, rồi tạo **public repository** tên `lingua-os`.
-2. Tải các file trong thư mục này lên **gốc** repository (Add file → Upload files → Commit).
-3. Trong repository chọn **Settings → Pages → Build and deployment**.
-4. Chọn **Deploy from a branch**, branch `main`, folder `/(root)`, rồi Save.
-5. Link thường có dạng `https://TEN-TAI-KHOAN.github.io/lingua-os/` (thay theo tài khoản thực tế; kiểm tra URL GitHub hiển thị).
-6. Trên điện thoại, vào link HTTPS để thêm app vào màn hình chính (nếu trình duyệt hỗ trợ).
+## Đưa lên GitHub Pages
+1. Tạo repository public trên GitHub, ví dụ `lingua-os`.
+2. Đưa toàn bộ file trong thư mục này vào **root** của repository.
+3. Settings → Pages → Deploy from a branch → main → /(root) → Save.
+4. Mở URL GitHub Pages của repository.
+5. Nếu cập nhật bản cũ, dùng đường dẫn mới hoặc refresh để lấy tài nguyên mới; không xoá dữ liệu trang khi chưa backup.
 
-## Quyền riêng tư, sao lưu và hạn chế
-- Dữ liệu lưu bằng **IndexedDB của riêng trình duyệt và origin**, KHÔNG tự đồng bộ giữa các thiết bị. Nút **Cài đặt → Xuất dữ liệu JSON** và **Nhập bản sao lưu** dùng để chuyển dữ liệu.
-- Xóa dữ liệu site, chuyển origin hoặc dùng chế độ ẩn danh có thể khiến dữ liệu không còn. Sao lưu định kỳ.
-- Import thay thế dữ liệu hiện tại: sao lưu trước khi import. Không chia sẻ JSON nếu ghi chú chứa thông tin cá nhân.
-- App cung cấp **spaced repetition đơn giản**, KHÔNG khẳng định đã tích hợp thuật toán FSRS chuẩn. Chưa có AI tutor, chấm phát âm tự động hay đồng bộ tài khoản.
-- Font có thể tải qua Google Fonts khi có mạng, nhưng có font hệ thống dự phòng; những tài sản lõi được lưu trong cache.
-- Nếu định sử dụng công khai, lưu ý GitHub Pages cho repository công khai sẽ công khai **mã nguồn và nội dung bài mẫu**; dữ liệu IndexedDB của từng người dùng không được commit lên GitHub.
+## Thêm bài học bằng JSON
+Trong app, chọn hồ sơ → Học phần → Thêm học liệu → Tải mẫu JSON.
+Cấu trúc:
 
-## Cấu trúc
-`index.html` (entry), `styles.css` (responsive UI), `app.js` (giao diện + IndexedDB + logic học), `sw.js` (offline caching), `manifest.webmanifest` / `icon.svg` (PWA).
+```json
+{"lessons":[{"subject":"Sinh lý", "title":"Bài 1", "description":"Mục tiêu", "minutes":20,
+"material":"Nội dung bài...", "passScore":80,
+"questions":[{"q":"Câu hỏi?","options":["A","B","C"],"answer":1,"explain":"Giải thích..."}],
+"cards":[["Khái niệm","Định nghĩa"]]}]}
+```
 
-## Phiên bản tiếp theo (tùy chọn)
-Kiểm tra đầu vào tùy trình độ, bài nghe và phát âm có âm thanh mẫu, hệ thống mục tiêu dài hạn, học liệu theo cấp độ, thuật toán FSRS chính xác, xuất bảng thống kê và khả năng đồng bộ khi người dùng chủ động cho phép.
+`answer` là chỉ số từ 0, không phải số thứ tự từ 1. Trình duyệt không tự trích xuất PDF/PPTX; khi gửi tài liệu cho ChatGPT để biên soạn, có thể tạo file JSON rồi nhập vào app. Nội dung y khoa cần được kiểm chứng trước khi dùng.
+
+## Lưu ý dữ liệu
+- IndexedDB lưu trong **trình duyệt và origin hiện tại**, có thể mất khi xóa dữ liệu trang web, chế độ riêng tư hoặc chính sách bộ nhớ của hệ thống.
+- Hai hồ sơ tách dữ liệu *theo logic ứng dụng*, không có đăng nhập/mật khẩu hay phân quyền an toàn riêng.
+- Bản sao lưu không được mã hóa. Không lưu thông tin bệnh nhân hay thông tin nhạy cảm trong học liệu và nhật ký.
+- Không có AI tutor, đánh giá tự luận tự động, sync cloud, FSRS đầy đủ hoặc giáo trình chính thức ĐHQGHN.
+- Lịch 72'/48' dành cho Thọ được ghi trong dashboard; bài mẫu chưa cấu thành trọn giáo trình 120 phút/ngày.
