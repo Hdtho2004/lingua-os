@@ -8,7 +8,10 @@ const state = {
   answers: [],
   orderSel: [],
   matchPick: null,
-  matchPairs: []
+  matchPairs: [],
+  feedback: null,
+  firstAttempts: [],
+  corrections: []
 };
 let progress = {};
 
@@ -205,14 +208,14 @@ function renderOverview() {
           <div class="focus-top">
             <div>
               <div class="k">Hôm nay nên bắt đầu từ đâu?</div>
-              <h3>Tiếp tục theo đúng nhịp 72 phút English · 48 phút Chinese</h3>
+              <h3>Chọn bài bạn muốn học</h3>
 
             </div>
             <button class="primary" data-nav="modules">Vào học phần</button>
           </div>
         </div>
         <div class="stat-strip refined-stats">
-          <div class="card stat"><div class="k">Tỷ lệ thời gian</div><div class="v">72 / 48</div><div class="small">72 phút English · 48 phút Chinese</div></div>
+          <div class="card stat"><div class="k">Nhịp học</div><div class="v">Tự do</div><div class="small">Học theo khả năng và thời gian của bạn</div></div>
           <div class="card stat"><div class="k">Module trọng tâm</div><div class="v">4</div><div class="small">English Foundations · English in Context · Mandarin Foundations · Mandarin Daily Use</div></div>
           <div class="card stat"><div class="k">Tiến độ lesson</div><div class="v">${doneCount}</div><div class="small">Số lesson đã hoàn thành</div></div>
         </div>
@@ -248,7 +251,7 @@ function renderModules() {
         <div class="lesson-row">
           <div>
             <strong>${esc(l.title)}</strong>
-            <span>${esc(l.hero)} · ${l.minutes} phút · ${l.tasks.length} hoạt động</span>
+            <span>${esc(l.hero)} · ${l.tasks.length} hoạt động</span>
           </div>
           <div style="display:flex;gap:10px;align-items:center">
             <span class="pill">Best ${pr.best || 0}%</span>
@@ -368,20 +371,58 @@ function renderPracticeTask(t) {
       <div class="progressbar"><b style="width:${((state.idx + 1) / currentLesson().tasks.length) * 100}%"></b></div>
       ${t.passage ? `<div class="passage-box"><div class="passage-heading">${esc(t.passageTitle || 'Reading passage')}</div><p>${esc(t.passage)}</p></div>` : ''}
       <h3 class="q-title">${esc(t.q)}</h3>
-      ${body}
+      ${state.feedback ? renderImmediateFeedback(t) : body}
       <div class="practice-actions">
-        <button class="secondary" id="prevTask" ${state.idx === 0 ? 'disabled' : ''}>← Câu trước</button>
-        <button class="primary" id="submitTask">Nộp câu này</button>
+        ${state.feedback ? '' : '<button class="primary" id="submitTask">Kiểm tra đáp án</button>'}
       </div>
     </div>
     <aside class="card side-card">
       <div class="breadcrumb">Learning by doing</div>
       <h3 style="font-size:23px;letter-spacing:-.03em;margin:14px 0 12px">Bộ luyện ${currentLesson().tasks.length} hoạt động</h3>
       <p class="subtitle" style="font-size:14px;line-height:1.65">Đọc kỹ ngữ cảnh, tự trả lời và xem giải thích sau khi nộp.</p>
-      <div class="note">Đạt từ 80% trở lên để đánh dấu hoàn thành. Các lỗi sai sẽ được lưu vào lịch sử của bài.</div>
+      <div class="note">Sai sẽ được giải thích ngay. Bạn phải sửa đúng trước khi chuyển tiếp. Điểm đánh giá tính theo lần trả lời đầu tiên.</div>
     </aside>`;
 }
 
+function normalizeCorrection(s) {
+  return String(s || '').normalize('NFC').toLocaleLowerCase('vi').trim().replace(/[.!?。？]+$/g, '').replace(/\s+/g, ' ');
+}
+function expectedCorrection(t, result) {
+  if (t.type === 'order') return t.answer.join(' ');
+  if (t.type === 'choice') return t.options[t.answer];
+  if (t.type === 'tf') return t.answer ? 'Đúng' : 'Sai';
+  if (t.type === 'cloze') return t.answer;
+  if (t.type === 'short') return t.answers[0];
+  return result.correct;
+}
+function renderImmediateFeedback(t) {
+  const f = state.feedback;
+  if (f.ok) return `<div class="answer-feedback correct"><div class="feedback-symbol">✓</div><div><strong>Chính xác!</strong><p>${esc(f.result.reason)}</p><button class="primary" id="nextTask">${state.idx === currentLesson().tasks.length - 1 ? 'Xem kết quả' : 'Câu tiếp theo →'}</button></div></div>`;
+  const corrected = f.corrected;
+  return `<div class="answer-feedback wrong"><div class="feedback-symbol">!</div><div><strong>Chưa đúng — hãy sửa trước khi tiếp tục</strong><p><b>Đáp án của bạn:</b> ${esc(f.result.user)}</p><p><b>Đáp án đúng:</b> ${esc(f.result.correct)}</p><p>${esc(f.result.reason)}</p><div class="correction-panel"><label for="correctionInput">Câu sửa lỗi: Hãy tự nhập lại đáp án đúng sau khi đọc giải thích</label><input id="correctionInput" class="input" autocomplete="off" placeholder="Nhập đáp án đúng…"><p class="correction-msg" id="correctionMsg" aria-live="polite">${corrected ? 'Đã sửa đúng.' : 'Bạn cần tự sửa để mở khóa câu tiếp theo.'}</p><button class="primary" id="verifyCorrection">Kiểm tra câu sửa</button></div></div></div>`;
+}
+function advanceTask() {
+  if (state.idx < currentLesson().tasks.length - 1) {
+    state.idx += 1;
+    state.feedback = null;
+    state.orderSel = [];
+    state.matchPick = null;
+    state.matchPairs = [];
+    render();
+  } else {
+    const res = resultSummary();
+    const old = lessonProgress(currentLesson().id);
+    progress[currentLesson().id] = {
+      done: old.done || res.percent >= 80,
+      best: Math.max(old.best || 0, res.percent),
+      history: [...(old.history || []), {at: Date.now(), score: res.percent, corrections: state.corrections.length}]
+    };
+    saveState();
+    state.tab = 'result';
+    state.feedback = null;
+    render();
+  }
+}
 function evaluateTask(t, answer) {
   if (t.type === 'choice') return { ok: answer === t.answer, user: t.options[answer] || '—', correct: t.options[t.answer], reason: t.reason };
   if (t.type === 'tf') {
@@ -412,7 +453,7 @@ function evaluateTask(t, answer) {
 
 function resultSummary() {
   const l = currentLesson();
-  const detailed = l.tasks.map((t, i) => evaluateTask(t, state.answers[i]));
+  const detailed = l.tasks.map((t, i) => evaluateTask(t, state.firstAttempts[i] === undefined ? state.answers[i] : state.firstAttempts[i]));
   let score = 0;
   detailed.forEach(r => { score += r.fraction != null ? r.fraction : (r.ok ? 1 : 0); });
   const percent = Math.round(score / l.tasks.length * 100);
@@ -435,9 +476,9 @@ function renderResult() {
   return appShell(`
     <section class="lesson-head">
       <a class="back-link" href="#" data-nav="modules">← ${esc(m.name)}</a>
-      <div class="module-badge">${esc(m.name)} · ${l.minutes} phút</div>
+      <div class="module-badge">${esc(m.name)} · Học theo tiến độ</div>
       <div class="lesson-title">${esc(l.title)}</div>
-      <p class="lesson-hero">Kết quả của lần làm này. Bài được đánh dấu hoàn thành khi đạt từ 80% trở lên.</p>
+      <p class="lesson-hero">Kết quả của lần làm này. Bài chỉ hoàn thành khi mọi câu đã được giải quyết và điểm lần đầu đạt ít nhất 80%.</p>
     </section>
     <div class="tabs">
       <button class="tab" data-tab="read">01 · Hiểu bài</button>
@@ -494,7 +535,7 @@ function renderLesson() {
 
         <div class="read-intro">
           <div class="read-tile"><strong>Mục tiêu của bài</strong><span>${esc(l.goal)}</span></div>
-          <div class="read-tile"><strong>Chuẩn hoàn thành</strong><span>Đạt từ 80% ở phần thực hành và hiểu được ít nhất các ý trong checklist.</span></div>
+          <div class="read-tile"><strong>Chuẩn hoàn thành</strong><span>Học không giới hạn thời gian. Trả lời sai phải sửa đúng; điểm lần đầu từ 80% để đạt bài.</span></div>
         </div>
         <div class="theory">${theory}</div>
         <div class="examples"><h4>Ví dụ đúng / sai</h4><div class="example-grid">${examples}</div></div>
@@ -514,7 +555,7 @@ function renderLesson() {
   return appShell(`
     <section class="lesson-head">
       <a class="back-link" href="#" data-nav="modules">← ${esc(m.name)}</a>
-      <div class="module-badge">${esc(m.name)} · ${l.minutes} phút</div>
+      <div class="module-badge">${esc(m.name)} · Học theo tiến độ</div>
       <div class="lesson-title">${esc(l.title)}</div>
       <p class="lesson-hero">${esc(l.hero)}</p>
     </section>
@@ -562,6 +603,7 @@ function bindCommon() {
     state.orderSel = [];
     state.matchPick = null;
     state.matchPairs = [];
+    state.feedback = null; state.firstAttempts = []; state.corrections = [];
     setPage('lesson');
   });
   $$('[data-tab]').forEach(btn => btn.onclick = () => {
@@ -583,6 +625,7 @@ function bindCommon() {
     state.orderSel = [];
     state.matchPick = null;
     state.matchPairs = [];
+    state.feedback = null; state.firstAttempts = []; state.corrections = [];
     render();
   });
   if (state.page === 'lesson' && state.tab === 'practice') bindPractice();
@@ -590,83 +633,58 @@ function bindCommon() {
 
 function bindPractice() {
   const t = currentLesson().tasks[state.idx];
+  if (state.feedback) {
+    $('#nextTask')?.addEventListener('click', advanceTask);
+    $('#verifyCorrection')?.addEventListener('click', () => {
+      const input = $('#correctionInput');
+      const expected = expectedCorrection(t, state.feedback.result);
+      const typed = input?.value || '';
+      if (normalizeCorrection(typed) === normalizeCorrection(expected)) {
+        state.feedback.corrected = true;
+        state.corrections.push({question:state.idx, before:state.feedback.result.user, after:typed});
+        // Retain the first attempt for the true assessment score.
+        $('#correctionMsg').textContent = 'Đúng rồi! Bạn đã sửa lỗi thành công.';
+        $('#verifyCorrection').remove();
+        const next = document.createElement('button');
+        next.id='nextTask'; next.className='primary';
+        next.textContent = state.idx === currentLesson().tasks.length-1 ? 'Xem kết quả →' : 'Tiếp tục →';
+        $('.correction-panel').appendChild(next);
+        next.addEventListener('click', advanceTask);
+      } else {
+        $('#correctionMsg').textContent = 'Chưa đúng. Hãy so lại đáp án và lời giải thích rồi thử lại.';
+        input.focus();
+      }
+    });
+    return;
+  }
   $$('[data-choice]').forEach(btn => btn.onclick = () => {
-    state.answers[state.idx] = Number(btn.dataset.choice);
-    render();
+    state.answers[state.idx] = Number(btn.dataset.choice); render();
   });
   $$('[data-fill]').forEach(btn => btn.onclick = () => {
-    const inp = $('#inputAnswer');
-    if (inp) {
-      inp.value = btn.dataset.fill;
-      state.answers[state.idx] = btn.dataset.fill;
-    }
+    const input=$('#inputAnswer'); if (input) {input.value=btn.dataset.fill;state.answers[state.idx]=btn.dataset.fill;}
   });
   $('#inputAnswer')?.addEventListener('input', e => state.answers[state.idx] = e.target.value);
-  $$('[data-add]').forEach(btn => btn.onclick = () => {
-    state.orderSel.push(Number(btn.dataset.add));
-    render();
-  });
-  $$('[data-remove]').forEach(btn => btn.onclick = () => {
-    state.orderSel = state.orderSel.filter(x => x !== Number(btn.dataset.remove));
-    render();
-  });
-  $$('[data-left]').forEach(btn => btn.onclick = () => {
-    state.matchPick = Number(btn.dataset.left);
-    render();
-  });
+  $$('[data-add]').forEach(btn => btn.onclick = () => {state.orderSel.push(Number(btn.dataset.add));render();});
+  $$('[data-remove]').forEach(btn => btn.onclick = () => {state.orderSel=state.orderSel.filter(x=>x!==Number(btn.dataset.remove));render();});
+  $$('[data-left]').forEach(btn => btn.onclick = () => {state.matchPick=Number(btn.dataset.left);render();});
   $$('[data-right]').forEach(btn => btn.onclick = () => {
-    if (state.matchPick != null) {
-      state.matchPairs.push([state.matchPick, Number(btn.dataset.right)]);
-      state.matchPick = null;
-      render();
-    }
-  });
-  $('#prevTask')?.addEventListener('click', () => {
-    if (state.idx > 0) {
-      state.idx -= 1;
-      state.orderSel = [];
-      state.matchPick = null;
-      state.matchPairs = [];
-      render();
+    if (state.matchPick!=null && !state.matchPairs.some(x=>x[1]===Number(btn.dataset.right))) {
+      state.matchPairs.push([state.matchPick,Number(btn.dataset.right)]);state.matchPick=null;render();
     }
   });
   $('#submitTask')?.addEventListener('click', () => {
-    let answer = state.answers[state.idx];
-    if (t.type === 'order') answer = [...state.orderSel];
-    if (t.type === 'match') answer = [...state.matchPairs];
-
-    const valid = t.type === 'order'
-      ? answer?.length === t.words.length
-      : t.type === 'match'
-      ? answer?.length === t.pairs.length
-      : (t.type === 'cloze' || t.type === 'short')
-      ? String(answer || '').trim() !== ''
-      : answer !== undefined;
-
-    if (!valid) {
-      alert('Hãy trả lời đầy đủ trước khi tiếp tục.');
-      return;
-    }
-
-    state.answers[state.idx] = answer;
-    if (state.idx < currentLesson().tasks.length - 1) {
-      state.idx += 1;
-      state.orderSel = [];
-      state.matchPick = null;
-      state.matchPairs = [];
-      render();
-    } else {
-      const res = resultSummary();
-      const old = lessonProgress(currentLesson().id);
-      progress[currentLesson().id] = {
-        done: old.done || res.percent >= 80,
-        best: Math.max(old.best || 0, res.percent),
-        history: [...(old.history || []), { at: Date.now(), score: res.percent }]
-      };
-      saveState();
-      state.tab = 'result';
-      render();
-    }
+    let answer=state.answers[state.idx];
+    if (t.type==='order') answer=[...state.orderSel];
+    if (t.type==='match') answer=[...state.matchPairs];
+    const valid=t.type==='order' ? answer?.length===t.words.length :
+      t.type==='match' ? answer?.length===t.pairs.length :
+      ['cloze','short'].includes(t.type) ? String(answer||'').trim()!=='' : answer!==undefined;
+    if (!valid) {alert('Hãy trả lời đầy đủ trước khi tiếp tục.');return;}
+    state.answers[state.idx]=answer;
+    state.firstAttempts[state.idx]=answer;
+    const result=evaluateTask(t,answer);
+    state.feedback={ok: result.ok, corrected:false, result};
+    render();
   });
 }
 

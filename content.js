@@ -4,7 +4,7 @@ window.LINGUA_DATA = {
       "id": "tho",
       "name": "Thọ",
       "subtitle": "English & Chinese",
-      "tag": "72’ English · 48’ Chinese",
+      "tag": "English · Chinese",
       "emoji": "文"
     },
     {
