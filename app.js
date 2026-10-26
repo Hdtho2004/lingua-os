@@ -1,55 +1,666 @@
-(()=>{'use strict';
-const $=(s)=>document.querySelector(s),esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const C=window.COURSE_DATA,LESSONS=C.lessons,MODS=C.modules;
-let db,state,ui={screen:'profiles',course:null,lesson:null,step:'read',idx:0,answers:[],selected:null,match:[],matchPick:null,order:[],attempt:null,flipped:false,card:0,filter:'all'};
-const stamp=()=>new Date().toLocaleDateString('vi-VN');
-const initial=()=>({version:6,active:'tho',progress:{tho:{},thuong:{}},attempts:{tho:[],thuong:[]},notes:{tho:[],thuong:[]},cards:{tho:[],thuong:[]},imports:{tho:[],thuong:[]},created:Date.now()});
-function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open('lingua-os-v6',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function read(k){return new Promise((res,rej)=>{let r=db.transaction('kv','readonly').objectStore('kv').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function save(){return new Promise((res,rej)=>{let tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(state,'state');tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
-function notice(msg){let t=document.createElement('div');t.className='toast';t.textContent=msg;$('#toast').append(t);setTimeout(()=>t.remove(),3300)}
-const lessonList=()=>[...LESSONS,...state.imports[state.active]];
-const ownCourses=()=>MODS.filter(m=>m.profile===state.active);
-const courseLessons=id=>lessonList().filter(l=>l.module===id);
-const prog=(id)=>state.progress[state.active][id];
-const completed=(id)=>!!prog(id)?.completed;
-const countDone=(arr)=>arr.filter(l=>completed(l.id)).length;
-const cstatus=l=>completed(l.id)?'<span class="pill green">✓ Đã đạt</span>':prog(l.id)?.attempts?'<span class="pill gold">↻ Cần luyện</span>':'<span class="pill">Chưa học</span>';
-const percent=(n,d)=>d?Math.round(n/d*100):0;
-const allOwn=()=>lessonList().filter(l=>ownCourses().some(m=>m.id===l.module));
-const isTho=()=>state.active==='tho';
-function navigate(screen,course=null,lesson=null){ui={...ui,screen,course,lesson,step:'read',idx:0,answers:[],selected:null,match:[],matchPick:null,order:[],attempt:null,filter:'all'};render();window.scrollTo(0,0)}
-const menu=[['overview','Tổng quan','⌂'],['courses','Học phần','▤'],['review','Ôn tập','◇'],['journal','Nhật ký','✎'],['stats','Thống kê','▥'],['settings','Cài đặt','⚙']];
-function shell(inner){let name=isTho()?'Thọ':'Thương',current=menu.find(m=>m[0]===ui.screen)?.[1]||'Learning';$('#root').innerHTML=`<div class="app"><aside class="sidebar"><div class="brand"><b>L</b><div>lingua os.<small>LEARN WITH INTENTION</small></div></div><div class="side-label">WORKSPACE · ${name.toUpperCase()}</div>${menu.map(([id,label,icon])=>`<button class="side-btn ${ui.screen===id?'active':''}" data-go="${id}"><span>${icon}</span>${label}</button>`).join('')}<div class="side-foot">✦ Học có bằng chứng<br>☁ Sao lưu trong Cài đặt<br>✓ Không yêu cầu API</div></aside><main class="main"><div class="content"><div class="top"><span class="crumb">LINGUA OS / ${esc(current)}</span><div class="toolbar toolbar-pretty"><div class="header-chip date-chip"><span class="chip-label">Today</span><span class="chip-value">${stamp()}</span></div><button class="profile-switch elevated" data-go="profiles"><span class="avatar halo">${name[0]}</span><span class="profile-meta"><span class="chip-label">Workspace</span><span class="profile-label">${name}</span></span><span class="chev">⌄</span></button></div></div>${inner}</div></main></div><div class="mobile-nav">${menu.slice(0,5).map(([id,label,icon])=>`<button class="${ui.screen===id?'active':''}" data-go="${id}"><span>${icon}</span>${label}</button>`).join('')}</div>`;document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>navigate(b.dataset.go));document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>navigate('course',b.dataset.course));document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>navigate('lesson',null,b.dataset.lesson));}
-function profiles(){ $('#root').innerHTML=`<div class="app"><aside class="sidebar"><div class="brand"><b>L</b><div>lingua os.<small>LEARN WITH INTENTION</small></div></div><div class="side-label">PERSONAL LEARNING SPACE</div><div class="side-foot">Hai người · hai hành trình · một không gian học tập.</div></aside><main class="main"><div class="content"><div class="top"><span class="crumb">LINGUA OS / WELCOME</span><span class="muted" style="font-size:12px">${stamp()}</span></div><div class="eyebrow">YOUR LEARNING SPACE</div><h1 style="margin:13px 0">Hôm nay ai đang học?</h1><p class="subtitle">Chọn không gian riêng. Mỗi người có môn học, tiến độ, flashcard và nhật ký độc lập.</p><div class="grid" style="margin-top:32px"><button class="card profile-card hover" data-profile="tho"><span class="profile-icon">文</span><h2>Thọ</h2><p class="muted">Tiếng Anh & Tiếng Trung · Học theo lộ trình và luyện tập tương tác.</p><div class="pill">English 72′ · Chinese 48′ →</div></button><button class="card profile-card hover" data-profile="thuong"><span class="profile-icon rose">♡</span><h2>Thương</h2><p class="muted">Y đa khoa · Học theo tài liệu và đề cương từng học phần.</p><div class="pill" style="background:#fcecf3;color:#ac547a">Y đa khoa · Kho học liệu riêng →</div></button></div><p class="small-text" style="margin-top:30px">Tiến độ được lưu cục bộ trên trình duyệt. Hãy dùng xuất/nhập dữ liệu để chuyển thiết bị.</p></div></main></div>`;document.querySelectorAll('[data-profile]').forEach(b=>b.onclick=async()=>{state.active=b.dataset.profile;await save();navigate('overview')});}
-function courseCard(m){let lessons=courseLessons(m.id),done=countDone(lessons),pct=percent(done,lessons.length);return `<button class="card course-card hover" data-course="${m.id}"><div class="course-icon ${m.accent}">${esc(m.icon)}</div><div class="eyebrow">${esc(m.level)} · ${esc(m.weeks)}</div><h3>${esc(m.name)}</h3><p>${esc(m.subtitle)}</p><div class="progress" style="margin-top:auto"><i style="width:${pct}%"></i></div><div class="course-bottom"><span>${done}/${lessons.length} bài đạt</span><span>${lessons.length?'Vào học →':'Chưa có học liệu →'}</span></div></button>`}
-function overview(){let mods=ownCourses(),lessons=allOwn(),done=countDone(lessons),due=state.cards[state.active].filter(c=>c.due<=Date.now()).length;let recommended=lessons.find(l=>!completed(l.id));shell(`<div class="hero"><div><div class="eyebrow">✦ ${isTho()?'LANGUAGE LEARNING':'MEDICAL LEARNING'}</div><h1>Chào ${isTho()?'Thọ':'Thương'}, cùng học sâu hơn mỗi ngày.</h1><p>${isTho()?'Mỗi ngày 72 phút tiếng Anh và 48 phút tiếng Trung. Chọn môn để xem chương, bài và hoạt động luyện tập.':'Không gian học Y đa khoa. Tài liệu được bổ sung theo học phần, không tự tạo giáo trình không có nguồn.'}</p></div><div class="hero-mark">✦</div></div><div class="stats"><div class="stat"><small>Bài đã đạt</small><strong>${done}/${lessons.length}</strong></div><div class="stat"><small>Ôn tập đến hạn</small><strong>${due}</strong></div><div class="stat"><small>Môn đang có</small><strong>${mods.filter(m=>courseLessons(m.id).length).length}</strong></div></div>${recommended?`<div class="section-row"><h2>Tiếp tục học</h2><span class="small-text">Đề xuất từ các bài chưa đạt</span></div><div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><div class="eyebrow">NEXT LESSON</div><h3 style="margin:7px 0">${esc(recommended.name)}</h3><div class="small-text">${esc(MODS.find(m=>m.id===recommended.module)?.name)} · ${recommended.duration} phút · Có bài kiểm tra</div></div><button class="button" data-lesson="${recommended.id}">Bắt đầu học →</button></div>`:''}<div class="section-row"><h2>${isTho()?'Môn học của Thọ':'Học phần của Thương'}</h2><button class="button light small" data-go="courses">Xem tất cả →</button></div><div class="grid">${mods.map(courseCard).join('')}</div>${isTho()?`<div class="section-row"><h2>Lộ trình 12 tuần</h2><span class="small-text">Khung định hướng, không tính là học phần đã hoàn thành</span></div><div class="card timeline">${C.roadmap.map(([w,s])=>`<div><strong>${esc(w)}</strong><p class="muted" style="margin:4px 0;font-size:13px">${esc(s)}</p></div>`).join('')}</div>`:''}`);}
-function courses(){shell(`<div class="eyebrow">MY COURSES</div><h1>Học phần của ${isTho()?'Thọ':'Thương'}</h1><p class="subtitle">Chọn môn, sau đó chọn bài. Các ví dụ nhỏ nằm bên trong bài học thay vì chiếm một học phần riêng.</p><div class="grid" style="margin-top:27px">${ownCourses().map(courseCard).join('')}</div><div class="notice" style="margin-top:25px">Học liệu bổ sung từ PDF, slide và giáo trình sẽ được tạo thành gói JSON để nhập trong Cài đặt. Nội dung y khoa hiện để trống, chờ tài liệu chính thức của Thương.</div>`)}
-function course(){const m=MODS.find(x=>x.id===ui.course&&x.profile===state.active);if(!m)return navigate('courses');const ls=courseLessons(m.id);shell(`<button class="back" data-go="courses">← Quay về các môn học</button><div class="eyebrow">${esc(m.subject)} / ${esc(m.level)}</div><h1>${esc(m.name)}</h1><p class="subtitle">${esc(m.intro)}</p><div class="source-strip">${(m.sources||[]).map(s=>`<a class="source-chip" href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('')}</div><div class="course-illustration"><svg viewBox="0 0 360 95" aria-label="Minh họa quá trình học"><circle cx="67" cy="48" r="28" fill="#e2defb"/><circle cx="180" cy="48" r="28" fill="#d6ebe9"/><circle cx="292" cy="48" r="28" fill="#eadffa"/><path d="M96 48H149M209 48H264" stroke="#9a8fd4" stroke-width="3" stroke-dasharray="5 5"/><text x="67" y="56" font-size="25" text-anchor="middle" fill="#6757bd">${esc(m.icon)}</text><text x="180" y="55" font-size="27" text-anchor="middle" fill="#448b84">✎</text><text x="292" y="55" font-size="26" text-anchor="middle" fill="#7263bf">✓</text></svg></div><div class="section-row"><h2>Danh sách bài học</h2><span class="pill">${countDone(ls)}/${ls.length} bài đạt</span></div>${ls.length?ls.map((l,i)=>`<div class="lesson-row"><div class="lesson-index">${String(i+1).padStart(2,'0')}</div><div style="flex:1"><h3>${esc(l.name)}</h3><small>${esc(l.objective)} · ${l.duration} phút · ${l.tasks.length} hoạt động</small></div>${cstatus(l)}<button class="button light small" data-lesson="${l.id}">Học →</button></div>`).join(''):`<div class="card empty"><div class="emoji">📚</div><h3>Chưa nhập học liệu</h3><p>Sẽ bổ sung sau khi Thương cung cấp giáo trình và slide học phần.</p><button class="button secondary" data-go="settings">Xem cách nhập tài liệu</button></div>`}`)}
-function lesson(){const l=lessonList().find(x=>x.id===ui.lesson);if(!l)return navigate('courses');const m=MODS.find(x=>x.id===l.module);if(!m||m.profile!==state.active)return navigate('courses');let body=`<button class="back" data-course="${m.id}">← ${esc(m.name)}</button><div class="eyebrow">${esc(m.name)} · ${l.duration} PHÚT</div><h1>${esc(l.name)}</h1><p class="subtitle">${esc(l.objective)}</p><div class="filters"><button class="${ui.step==='read'?'selected':''}" data-step="read">01 · Hiểu bài sâu</button><button class="${ui.step==='practice'?'selected':''}" data-step="practice">02 · Luyện tập đa dạng</button><button class="${ui.step==='result'?'selected':''}" data-step="result" ${ui.step==='result'?'':'disabled'}>03 · Kết quả</button></div>`;
-if(ui.step==='read'){body+=`<div class="learning-layout"><div class="card"><div class="eyebrow">LEARN WITH MEANING</div><h2 style="margin-top:10px">Hiểu bài thật sự trước khi làm</h2><p class="subtitle" style="margin-top:2px">Phần này được biên soạn lại từ nhiều nguồn chính thống và trình bày theo hướng dễ hiểu cho người Việt: khái niệm → lỗi thường gặp → ví dụ đúng/sai → cách tự kiểm.</p><div class="insight-grid"><div class="insight-card"><strong>Mục tiêu</strong><span>${esc(l.objective)}</span></div><div class="insight-card"><strong>Đầu ra tối thiểu</strong><span>Đạt ≥ 80% và tự giải thích được nội dung bằng lời của bạn.</span></div></div>${l.theory.map(([h,p])=>`<div class="theory-block"><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`).join('')}${l.examples?`<div class="example-box"><h3>Ví dụ đúng / sai cần nhìn ra</h3><div class="example-grid">${l.examples.map(e=>`<div class="example-item"><span class="ex-label">${esc(e[0])}</span><strong>${esc(e[1])}</strong></div>`).join('')}</div></div>`:''}<div class="reading-note"><h3>Checklist tự hiểu bài</h3><ul>${(l.checklist||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="notice">Đừng lướt qua phần này. Hãy đọc, tự nói lại quy tắc bằng lời của mình, đối chiếu ví dụ đúng/sai, rồi mới chuyển sang luyện tập.</div><div style="margin-top:22px"><button class="button" id="start-practice">Bắt đầu bộ luyện ${l.tasks.length} hoạt động →</button></div></div><aside class="card side-panel" style="align-self:start"><h3>Khung học của bài này</h3><div class="pill">≥ 80% để hoàn thành</div><div class="tiny-list">${(l.takeaways||[]).map(x=>`<div>• ${esc(x)}</div>`).join('')}</div><div style="margin-top:18px" class="small-text">Nguồn tham khảo chính</div><div class="source-stack">${(l.sources||[]).map(s=>`<a class="source-link" href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('')}</div><div class="notice">Dạng luyện tập: chọn đáp án · đúng/sai · ghép cặp · sắp xếp câu · điền từ · trả lời ngắn. Phần chấm này giúp hiểu và nhớ tốt hơn, nhưng chưa thay thế đánh giá nghe – nói thực tế.</div></aside></div>`}
-if(ui.step==='practice'){body+=renderTask(l)}
-if(ui.step==='result'){body+=renderResult(l)}shell(body);document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{if(b.dataset.step==='result')return;ui.step=b.dataset.step;render()});if($('#start-practice'))$('#start-practice').onclick=()=>{ui.step='practice';resetTask();render()};if(ui.step==='practice')bindTask(l);if(ui.step==='result')bindResult(l);}
-function resetTask(){ui.selected=null;ui.order=[];ui.match=[];ui.matchPick=null}
-function taskAnswer(t){if(t[0]==='choice'||t[0]==='cloze')return t[0]==='choice'?t[3]:t[3];if(t[0]==='order')return t[3];return t[3]}
-function renderTask(l){let t=l.tasks[ui.idx],kind=t[0],v=ui.selected,progress=percent(ui.idx,l.tasks.length),prompt=t[1],html='';if(kind==='choice'){html=t[2].map((a,i)=>`<button class="option ${v===i?'sel':''}" data-choice="${i}"><span class="dot"></span>${esc(a)}</button>`).join('')}
-if(kind==='tf'){html=['Đúng','Sai'].map((a,i)=>`<button class="option ${v===i?'sel':''}" data-choice="${i}"><span class="dot"></span>${a}</button>`).join('')}
-if(kind==='cloze'){html=`<input class="input" aria-label="Điền câu trả lời" id="cloze" placeholder="Nhập câu trả lời hoặc chọn gợi ý…" value="${esc(typeof v==='string'?v:'')}"><div class="choice-bank">${t[3].map(w=>`<button class="token" data-fill="${esc(w)}">${esc(w)}</button>`).join('')}</div>`}
-if(kind==='short'){html=`<input class="input" aria-label="Trả lời ngắn" id="cloze" placeholder="Tự nhập câu trả lời…" value="${esc(typeof v==='string'?v:'')}">${t[2]?.length?`<div class="choice-bank">${t[2].map(w=>`<button class="token" data-fill="${esc(w)}">${esc(w)}</button>`).join('')}</div>`:''}`}
-if(kind==='order'){const words=t[2];html=`<div class="dropzone" aria-label="Câu đã ghép">${ui.order.length?ui.order.map((i,j)=>`<button class="token" data-remove="${j}">${esc(words[i])} ×</button>`).join(''):'Chọn từ bên dưới theo đúng thứ tự'}</div><div class="choice-bank">${words.map((w,i)=>`<button class="token ${ui.order.includes(i)?'used':''}" data-add="${i}" ${ui.order.includes(i)?'disabled':''}>${esc(w)}</button>`).join('')}</div>`}
-if(kind==='match'){const pairs=t[2],right=pairs.map((x,i)=>({text:x[1],id:i})).sort((a,b)=>((a.id*7+3)%pairs.length)-((b.id*7+3)%pairs.length));html=`<p class="small-text">Chọn một mục bên trái, rồi chọn mục tương ứng bên phải.</p><div class="match-table"><div>${pairs.map((p,i)=>`<button class="match-item ${ui.match.some(m=>m[0]===i)?'done':ui.matchPick===i?'selected':''}" data-left="${i}" ${ui.match.some(m=>m[0]===i)?'disabled':''}>${esc(p[0])}</button>`).join('')}</div><div>${right.map(p=>`<button class="match-item ${ui.match.some(m=>m[1]===p.id)?'done':''}" data-right="${p.id}" ${ui.match.some(m=>m[1]===p.id)?'disabled':''}>${esc(p.text)}</button>`).join('')}</div></div><div class="small-text" style="margin-top:10px">Đã ghép ${ui.match.length}/${pairs.length} cặp</div>`}
-return `<div class="learning-layout"><div class="exercise"><div class="lesson-intro"><div class="eyebrow">${{choice:'CHỌN ĐÁP ÁN',tf:'ĐÚNG / SAI',cloze:'ĐIỀN TỪ',short:'TRẢ LỜI NGẮN',match:'GHÉP CẶP',order:'SẮP XẾP CÂU'}[kind]}</div><span class="pill">${ui.idx+1}/${l.tasks.length}</span></div><div class="progress" style="margin:18px 0 22px"><i style="width:${progress}%"></i></div><div class="question">${esc(prompt)}</div>${html}<div class="quiz-foot"><span class="small-text">${ui.answers.filter(Boolean).length} hoạt động đã ghi nhận</span><button class="button" id="submit-task">${ui.idx===l.tasks.length-1?'Chấm bài →':'Xác nhận & tiếp tục →'}</button></div></div><aside class="card side-panel" style="align-self:start"><div class="eyebrow">LEARNING BY DOING</div><h3 style="margin-top:12px">Luyện theo nhiều cơ chế nhớ</h3><p class="muted" style="font-size:13px">Bạn đang không chỉ làm quiz. Bộ luyện này cố ý xen kẽ nhận biết, truy xuất, ghép cặp, sắp xếp và tự điền để giúp nhớ chắc hơn.</p><div class="tiny-list"><div>• Nhận biết nhanh</div><div>• Tự nhớ lại</div><div>• So sánh đúng / sai</div><div>• Áp dụng vào mẫu câu</div></div><div class="notice">Hãy tự nhớ lại trước khi nhìn gợi ý. Bài chỉ được đánh dấu hoàn thành khi tổng điểm đạt ngưỡng.</div></aside></div>`}
-function checkTask(t){let k=t[0];if(k==='choice')return {correct:ui.selected===t[3],user:t[2][ui.selected]||'—',correctAnswer:t[2][t[3]],reason:t[4]};if(k==='tf'){let ok=(t[2]?0:1);return {correct:ui.selected===ok,user:['Đúng','Sai'][ui.selected]||'—',correctAnswer:t[2]?'Đúng':'Sai',reason:t[3]}}if(k==='cloze'){let a=String(ui.selected||'').trim().toLowerCase(),b=String(t[2]).trim().toLowerCase();return {correct:a===b,user:ui.selected||'—',correctAnswer:t[2],reason:t[4]}}if(k==='short'){let a=String(ui.selected||'').trim().toLowerCase();let answers=(Array.isArray(t[3])?t[3]:[t[3]]).map(x=>String(x).trim().toLowerCase());return {correct:answers.includes(a),user:ui.selected||'—',correctAnswer:Array.isArray(t[3])?t[3][0]:t[3],reason:t[4]}}if(k==='order'){let a=ui.order.map(i=>t[2][i]),b=t[3];return {correct:JSON.stringify(a)===JSON.stringify(b),user:a.join(' '),correctAnswer:b.join(' '),reason:t[4]}}if(k==='match'){let good=ui.match.filter(([a,b])=>a===b).length;return {correct:good===t[2].length,user:`${good}/${t[2].length} cặp đúng`,correctAnswer:`${t[2].length} cặp đúng`,reason:'Ghép đúng nghĩa và ngữ cảnh của tất cả cặp.',fraction:good/t[2].length}}}
-function bindTask(l){document.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>{ui.selected=Number(b.dataset.choice);render()});document.querySelectorAll('[data-fill]').forEach(b=>b.onclick=()=>{ui.selected=b.dataset.fill;render()});$('#cloze')?.addEventListener('input',e=>ui.selected=e.target.value);document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ui.order.push(Number(b.dataset.add));render()});document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{ui.order.splice(Number(b.dataset.remove),1);render()});document.querySelectorAll('[data-left]').forEach(b=>b.onclick=()=>{ui.matchPick=Number(b.dataset.left);render()});document.querySelectorAll('[data-right]').forEach(b=>b.onclick=()=>{if(ui.matchPick===null){notice('Chọn mục bên trái trước');return}let right=Number(b.dataset.right);ui.match.push([ui.matchPick,right]);ui.matchPick=null;render()});$('#submit-task').onclick=()=>{const t=l.tasks[ui.idx];let valid=t[0]==='match'?ui.match.length===t[2].length:t[0]==='order'?ui.order.length===t[2].length:(t[0]==='cloze'||t[0]==='short')?String(ui.selected||'').trim()!=='':ui.selected!==null;if(!valid)return notice('Hãy trả lời đầy đủ trước khi tiếp tục.');ui.answers[ui.idx]=checkTask(t);resetTask();if(ui.idx<l.tasks.length-1){ui.idx++;render()}else{finish(l)}}}
-async function finish(l){let points=ui.answers.reduce((n,x)=>n+(x.fraction??Number(x.correct)),0);let score=Math.round(points/l.tasks.length*100),passed=score>=80,p=state.progress[state.active][l.id]||{attempts:0};state.progress[state.active][l.id]={attempts:p.attempts+1,best:Math.max(score,p.best||0),completed:passed||!!p.completed,updated:Date.now()};state.attempts[state.active].push({id:l.id,score,passed,at:Date.now(),answers:structuredClone(ui.answers)});if(passed&&!p.completed){l.cards.forEach((c,i)=>{const id=`${l.id}-${i}`;if(!state.cards[state.active].some(x=>x.id===id))state.cards[state.active].push({id,front:c[0],back:c[1],due:Date.now(),interval:1,level:0})})}await save();ui.attempt={score,passed,answers:ui.answers};ui.step='result';render()}
-function renderResult(l){let a=ui.attempt;if(!a)return '<div class="card">Chưa có bài kiểm tra mới.</div>';return `<div class="card"><div class="finish-hero" style="background:${a.passed?'#eaf7ef':'#fff4e4'}"><div class="eyebrow">${a.passed?'COMPLETED':'RETRY RECOMMENDED'}</div><h2 style="margin:9px 0">${a.passed?'Đã hoàn thành bài học!':'Chưa đạt điều kiện hoàn thành'}</h2><p style="margin-bottom:0">Điểm: <strong>${a.score}%</strong>. Cần ≥80%. ${a.passed?'Các thẻ từ đã được thêm vào mục ôn tập.':'Xem giải thích rồi luyện lại để củng cố kiến thức.'}</p></div><div class="section-row"><h2>Xem lại đáp án</h2><span class="pill">${a.answers.filter(x=>x.correct).length}/${l.tasks.length} hoạt động đúng hoàn toàn</span></div>${a.answers.map((res,i)=>`<details class="theory-block"><summary>${res.correct?'✓':'✕'} ${i+1}. ${esc(l.tasks[i][1])}</summary><p style="margin:9px 0">Bạn trả lời: ${esc(res.user)}</p><p>Đáp án: <strong>${esc(res.correctAnswer)}</strong></p><p>${esc(res.reason)}</p></details>`).join('')}<div class="toolbar" style="margin-top:18px"><button class="button" id="redo">Làm bài lại ↻</button><button class="button secondary" data-course="${l.module}">Quay về học phần</button></div></div>`}
-function bindResult(l){$('#redo').onclick=()=>{ui.idx=0;ui.answers=[];resetTask();ui.step='practice';render()};}
-function review(){let arr=state.cards[state.active].filter(c=>c.due<=Date.now()),c=arr[Math.min(ui.card,arr.length-1)];shell(`<div class="eyebrow">RECALL LAB</div><h1>Ôn tập chủ động</h1><p class="subtitle">Thẻ được tạo khi vượt bài kiểm tra; tự truy xuất đáp án trước khi lật.</p>${c?`<div class="card" style="max-width:720px"><span class="pill">${arr.length} thẻ đến hạn</span><div class="review-card" id="flip" style="margin:17px 0">${esc(ui.flipped?c.back:c.front)}</div><div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">${ui.flipped?`<button class="button light" data-rate="0">Quên · Ôn sớm</button><button class="button secondary" data-rate="1">Nhớ khó</button><button class="button" data-rate="2">Nhớ rõ</button>`:`<button class="button" id="flipbutton">Hiện đáp án →</button>`}</div></div>`:`<div class="card empty"><div class="emoji">✦</div><h2>Không có thẻ đến hạn</h2><p>Hoàn thành bài học để mở thẻ và quay lại khi đến lịch ôn.</p><button class="button" data-go="courses">Xem học phần</button></div>`}`);$('#flipbutton')?.addEventListener('click',()=>{ui.flipped=true;render()});$('#flip')?.addEventListener('click',()=>{ui.flipped=!ui.flipped;render()});document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=async()=>{let r=Number(b.dataset.rate),days=r===0?0.02:r===1?Math.max(1,c.interval*1.7):Math.max(2,c.interval*2.5);c.interval=days;c.level=(c.level||0)+r;c.due=Date.now()+days*86400000;ui.flipped=false;ui.card=0;await save();render()})}
-function journal(){let n=state.notes[state.active].slice().reverse();shell(`<div class="eyebrow">MY JOURNAL</div><h1>Nhật ký & lỗi học</h1><p class="subtitle">Ghi lại câu sai, điều khó hiểu và nhận thức mới của riêng bạn.</p><div class="learning-layout"><div class="card"><h3>Thêm ghi chú</h3><div class="form-row"><label>Chủ đề</label><input class="input" id="note-title" placeholder="Ví dụ: Trật tự câu hỏi" maxlength="100"></div><div class="form-row"><label>Điều cần nhớ</label><textarea class="input" id="note-text" rows="5" placeholder="Mình mắc lỗi gì, quy tắc đúng là gì, một ví dụ mới..."></textarea></div><button class="button" id="save-note">Lưu nhật ký</button></div><aside class="card"><h3>Gợi ý ghi chép</h3><p class="muted" style="font-size:13px">Mô tả lỗi → giải thích vì sao sai → tạo câu mới → ôn lại sau vài ngày.</p></aside></div><div class="section-row"><h2>Ghi chú đã lưu</h2><span class="pill">${n.length}</span></div><div class="stack">${n.map(x=>`<div class="card tight"><h3>${esc(x.title)}</h3><div class="small-text">${new Date(x.at).toLocaleString('vi-VN')}</div><p class="note" style="margin-top:9px">${esc(x.text)}</p></div>`).join('')||'<div class="empty">Chưa có ghi chú.</div>'}</div>`);$('#save-note').onclick=async()=>{let title=$('#note-title').value.trim(),text=$('#note-text').value.trim();if(!title||!text)return notice('Cần nhập chủ đề và nội dung');state.notes[state.active].push({title,text,at:Date.now()});await save();navigate('journal');notice('Đã lưu ghi chú')};}
-function stats(){let list=allOwn(),done=countDone(list),ats=state.attempts[state.active],best=ats.length?Math.round(ats.reduce((n,a)=>n+a.score,0)/ats.length):0;shell(`<div class="eyebrow">YOUR LEARNING EVIDENCE</div><h1>Tiến độ của ${isTho()?'Thọ':'Thương'}</h1><p class="subtitle">Hoàn thành = đạt bài kiểm tra; mức thành thạo dài hạn còn cần đánh giá trễ và thực hành.</p><div class="stats"><div class="stat"><small>Đã đạt bài học</small><strong>${done}/${list.length}</strong></div><div class="stat"><small>Lượt kiểm tra</small><strong>${ats.length}</strong></div><div class="stat"><small>Điểm trung bình lượt làm</small><strong>${best}%</strong></div></div><div class="card"><h2>Tiến độ theo môn</h2>${ownCourses().map(m=>{let ls=courseLessons(m.id),pct=percent(countDone(ls),ls.length);return `<div style="margin:19px 0"><div class="lesson-intro"><strong>${esc(m.name)}</strong><span class="small-text">${countDone(ls)}/${ls.length}</span></div><div class="progress" style="margin-top:9px"><i style="width:${pct}%"></i></div></div>`}).join('')}<div class="notice">Không nên hiểu điểm trắc nghiệm là trình độ nói/nghe hoặc năng lực y khoa thực tế. Hãy kết hợp bài kiểm tra thực hành và đánh giá có phản hồi.</div></div>`)}
-function download(name,data){const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},1000)}
-function validImportedLesson(l){return l&&typeof l.id==='string'&&typeof l.module==='string'&&typeof l.name==='string'&&Array.isArray(l.theory)&&Array.isArray(l.tasks)&&l.tasks.length>=1&&Array.isArray(l.cards)}
-function settings(){shell(`<div class="eyebrow">YOUR DATA · YOUR CONTROL</div><h1>Cài đặt & học liệu</h1><p class="subtitle">Tài liệu học mới được nhập dưới dạng gói bài học JSON. PDF/slide cần được chuyển thành bài học trước khi nhập.</p><div class="grid"><div class="card"><h3>Sao lưu toàn bộ</h3><p class="muted" style="font-size:13px">Xuất tiến độ, thẻ, ghi chú và học phần đã nhập. Nên sao lưu trước khi nâng cấp.</p><button class="button" id="export">Xuất JSON sao lưu</button><div style="margin-top:20px"><label>Khôi phục bản sao lưu</label><input type="file" accept=".json,application/json" id="restore" class="input"></div><button class="button light" id="restore-btn" style="margin-top:10px">Khôi phục dữ liệu</button></div><div class="card"><h3>Nhập gói bài học</h3><p class="muted" style="font-size:13px">Gói gồm danh sách lessons theo môn đã có. Trường hợp tài liệu mới, mình có thể tạo gói học liệu riêng sau khi xem tài liệu bạn gửi.</p><label>Chọn gói nội dung JSON</label><input type="file" accept=".json,application/json" id="import" class="input"><button class="button secondary" style="margin-top:12px" id="import-btn">Nhập bài học</button><p class="small-text" style="margin-top:12px">Giới hạn: 100 bài/gói. Chỉ nhận học liệu có cấu trúc được kiểm tra.</p></div></div><div class="notice" style="margin-top:20px">Lưu trong IndexedDB theo trình duyệt. Không tự đồng bộ giữa các thiết bị. Không đặt tài liệu riêng tư lên repository GitHub công khai. Đây không phải hệ thống xác thực cho nhiều người.</div>`);$('#export').onclick=()=>download('lingua-os-backup-'+Date.now()+'.json',state);$('#restore-btn').onclick=async()=>{let f=$('#restore').files[0];if(!f)return notice('Chọn file trước');try{let s=JSON.parse(await f.text());if(s.version!==4||!s.progress?.tho||!s.progress?.thuong||!s.imports?.tho||!s.imports?.thuong)throw Error('Định dạng không phù hợp');if(!confirm('Ghi đè dữ liệu hiện tại? Hãy sao lưu trước.'))return;state=s;await save();navigate('profiles');notice('Đã khôi phục bản sao lưu')}catch(e){notice('Không thể khôi phục: '+e.message)}};$('#import-btn').onclick=async()=>{let f=$('#import').files[0];if(!f)return notice('Chọn file JSON');try{let obj=JSON.parse(await f.text()),arr=obj.lessons;if(!Array.isArray(arr)||arr.length>100||!arr.every(validImportedLesson))throw Error('Gói bài học không hợp lệ');const allowed=ownCourses().map(x=>x.id);if(!arr.every(x=>allowed.includes(x.module)))throw Error('Chỉ nhập bài vào học phần của hồ sơ hiện tại');let count=0;for(let l of arr){if(!lessonList().some(x=>x.id===l.id)){state.imports[state.active].push(l);count++}}await save();navigate('courses');notice(`Đã nhập ${count} bài mới`)}catch(e){notice('Lỗi nhập: '+e.message)}}}
-function render(){if(ui.screen==='profiles')return profiles();if(ui.screen==='overview')return overview();if(ui.screen==='courses')return courses();if(ui.screen==='course')return course();if(ui.screen==='lesson')return lesson();if(ui.screen==='review')return review();if(ui.screen==='journal')return journal();if(ui.screen==='stats')return stats();if(ui.screen==='settings')return settings();navigate('profiles')}
-(async()=>{try{db=await openDB();state=await read('state');if(!state){state=initial();await save()}render();if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(e){$('#root').innerHTML='<div class="card" style="margin:30px">Không thể mở IndexedDB. Hãy dùng trình duyệt bình thường và bật lưu trữ trang web.<p>'+esc(e.message)+'</p></div>'}})();
-})();
+const data = window.LINGUA_DATA;
+const state = {
+  profile: 'tho',
+  page: 'profiles',
+  lessonId: null,
+  tab: 'read',
+  idx: 0,
+  answers: [],
+  orderSel: [],
+  matchPick: null,
+  matchPairs: []
+};
+let progress = {};
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const DB_NAME = 'lingua-os-v7';
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[m]));
+}
+
+async function openDB() {
+  return await new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('kv');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveState() {
+  const db = await openDB();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put({ progress, profile: state.profile }, 'app-state');
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadState() {
+  const db = await openDB();
+  return await new Promise((resolve, reject) => {
+    const tx = db.transaction('kv', 'readonly');
+    const req = tx.objectStore('kv').get('app-state');
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function currentProfile() {
+  return data.profiles.find(p => p.id === state.profile);
+}
+function currentLesson() {
+  return data.lessons.find(l => l.id === state.lessonId);
+}
+function currentModule() {
+  const l = currentLesson();
+  return l ? data.modules.find(m => m.id === l.module) : null;
+}
+function modulesForProfile() {
+  return data.modules.filter(m => m.profile === state.profile);
+}
+function lessonsForModule(id) {
+  return data.lessons.filter(l => l.module === id);
+}
+function lessonProgress(id) {
+  return progress[id] || { done: false, best: 0, history: [] };
+}
+function fmtDate() {
+  return new Intl.DateTimeFormat('vi-VN').format(new Date());
+}
+
+function setPage(page, extra = {}) {
+  Object.assign(state, extra, { page });
+  render();
+  saveState();
+}
+
+function appShell(inner) {
+  const p = currentProfile();
+  return `
+  <div class="app">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="logo">L</div>
+          <div>
+            <h1>lingua os.</h1>
+            <p>Learn with intention</p>
+          </div>
+        </div>
+        <div class="workspace">Workspace · ${esc(p.name)}</div>
+        <nav class="nav">
+          <button class="${state.page === 'overview' ? 'active' : ''}" data-nav="overview">🏠 Tổng quan</button>
+          <button class="${state.page === 'modules' ? 'active' : ''}" data-nav="modules">📚 Học phần</button>
+          <button class="${state.page === 'resources' ? 'active' : ''}" data-nav="resources">🔎 Tài nguyên</button>
+          <button class="${state.page === 'settings' ? 'active' : ''}" data-nav="settings">⚙️ Cài đặt</button>
+        </nav>
+      </div>
+      <div class="sidebar-foot">
+        <div>✦ Học có bằng chứng</div>
+        <div>☁ Không phụ thuộc API</div>
+        <div>💾 Có sao lưu / khôi phục</div>
+      </div>
+    </aside>
+    <main class="content">
+      <div class="topbar">
+        <div class="breadcrumb">Lingua OS / Learning</div>
+        <div class="toolbar">
+          <div class="date-chip">
+            <span class="chip-label">Today</span>
+            <span class="chip-value">${fmtDate()}</span>
+          </div>
+          <button class="profile-btn" id="switchProfile">
+            <span class="avatar">${esc(p.emoji)}</span>
+            <span class="profile-meta">
+              <span class="profile-title">Workspace</span>
+              <span class="profile-name">${esc(p.name)}</span>
+            </span>
+            <span class="profile-arrow">▾</span>
+          </button>
+        </div>
+      </div>
+      ${inner}
+    </main>
+  </div>`;
+}
+
+function renderProfiles() {
+  const cards = data.profiles.map(p => `
+    <div class="card profile-card" data-pick="${p.id}">
+      <div class="big-avatar">${esc(p.emoji)}</div>
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.subtitle)}</p>
+      <span class="tag">${esc(p.tag)}</span>
+    </div>`).join('');
+
+  return `
+    <section class="hero">
+      <div class="breadcrumb" style="margin-bottom:22px">Choose your space</div>
+      <h2>Ai đang học hôm nay?</h2>
+      <p class="subtitle">Trang đầu chỉ để chọn người học. Lộ trình của Thọ chỉ xuất hiện khi vào workspace riêng của Thọ, không hiện ở homepage chung.</p>
+    </section>
+    <div class="profile-pick">${cards}</div>`;
+}
+
+function renderOverview() {
+  const p = currentProfile();
+  if (p.id === 'tho') {
+    const doneCount = Object.values(progress).filter(x => x.done).length;
+    const roadmap = data.roadmap.map(r => `
+      <div class="card module-card">
+        <div class="pill">${esc(r[0])}</div>
+        <p style="margin:14px 0 0;color:#55627b;line-height:1.75">${esc(r[1])}</p>
+      </div>`).join('');
+
+    return appShell(`
+      <section class="hero">
+        <h2>${esc(p.name)} học gì hôm nay?</h2>
+        <p class="subtitle">Lộ trình của Thọ chỉ hiển thị trong workspace riêng. Tập trung vào ít module nhưng học sâu: giải thích rõ, thực hành dày và ôn tập có bằng chứng.</p>
+      </section>
+      <div class="stat-strip">
+        <div class="card stat"><div class="k">Tỷ lệ thời gian</div><div class="v">72 / 48</div><div class="small">72 phút English · 48 phút Chinese</div></div>
+        <div class="card stat"><div class="k">Module trọng tâm</div><div class="v">4</div><div class="small">English Foundations, English in Context, Mandarin Foundations, Mandarin Daily Use</div></div>
+        <div class="card stat"><div class="k">Tiến độ lesson</div><div class="v">${doneCount}</div><div class="small">Số lesson đã hoàn thành</div></div>
+      </div>
+      <div class="section-title">
+        <div>
+          <h3>Roadmap của Thọ</h3>
+          <p>Khung 12 tuần để gắn với app; sau này có thể mở rộng bằng tài liệu thật.</p>
+        </div>
+        <button class="secondary" data-nav="modules">Vào học phần</button>
+      </div>
+      <div class="grid-3">${roadmap}</div>
+    `);
+  }
+
+  return appShell(`
+    <section class="hero">
+      <h2>Workspace của ${esc(p.name)}</h2>
+      <p class="subtitle">Phần của Thương đang chờ tài liệu thật của học phần Y đa khoa. Khi có tài liệu, app sẽ dựng lại theo chương – bài – bộ đề – lịch ôn, thay vì điền nội dung giả.</p>
+    </section>
+    <div class="card module-card">
+      <h3 style="margin:0 0 8px">Thư viện học phần đang chờ tài liệu</h3>
+      <p class="subtitle" style="font-size:16px">Bạn có thể tiếp tục phát triển hạ tầng app, còn nội dung y khoa sẽ được nhập sau để giữ đúng yêu cầu “không rối, không nhồi module giả”.</p>
+    </div>
+  `);
+}
+
+function renderModules() {
+  const moduleHtml = modulesForProfile().map(m => {
+    const sources = (m.sources || []).map(s => `<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('');
+    const lessons = lessonsForModule(m.id).map(l => {
+      const pr = lessonProgress(l.id);
+      return `
+        <div class="lesson-row">
+          <div>
+            <strong>${esc(l.title)}</strong>
+            <span>${esc(l.hero)} · ${l.minutes} phút · ${l.tasks.length} hoạt động</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span class="pill">Best ${pr.best || 0}%</span>
+            <button data-open-lesson="${l.id}">Học bài này</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="card module-card">
+        <div class="module-head">
+          <div>
+            <div class="pill">${esc(m.level)}</div>
+            <h3 style="font-size:30px;margin:12px 0 6px;letter-spacing:-.03em">${esc(m.name)}</h3>
+            <p style="margin:0;color:#55627b;line-height:1.75">${esc(m.summary)}</p>
+            <div class="source-links">${sources}</div>
+          </div>
+        </div>
+        ${lessons ? `<div class="lessons-list">${lessons}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  return appShell(`
+    <section class="hero">
+      <h2>Học phần của ${esc(currentProfile().name)}</h2>
+      <p class="subtitle">Chọn đúng module cần học. Các module được gom lớn, tránh biến từng ví dụ nhỏ thành cả một học phần riêng gây rối.</p>
+    </section>
+    <div class="lessons-list">${moduleHtml}</div>
+  `);
+}
+
+function renderResources() {
+  const html = modulesForProfile().map(m => {
+    const sources = (m.sources || []).length ? (m.sources || []).map(s => `<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('') : '<span class="small">Chưa có nguồn công khai cố định</span>';
+    return `
+      <div class="card resource-item">
+        <h4>${esc(m.name)}</h4>
+        <p>${esc(m.summary)}</p>
+        <div class="source-links">${sources}</div>
+      </div>`;
+  }).join('');
+
+  return appShell(`
+    <section class="hero">
+      <h2>Thư viện nguồn học</h2>
+      <p class="subtitle">Đây là những nguồn mình ưu tiên để xây khung học liệu cho Thọ: ngữ pháp có giải thích rõ, hoạt động có phân cấp, và chuẩn năng lực / syllabus cho tiếng Trung.</p>
+    </section>
+    <div class="resource-list">${html}</div>
+  `);
+}
+
+function renderSettings() {
+  return appShell(`
+    <section class="hero">
+      <h2>Cài đặt & sao lưu</h2>
+      <p class="subtitle">Để an toàn cho tiến độ học tập, bạn nên xuất bản sao lưu trước khi cập nhật phiên bản hoặc chuyển thiết bị.</p>
+    </section>
+    <div class="settings">
+      <div class="card row">
+        <h4>Xuất dữ liệu</h4>
+        <p>Xuất trạng thái học tập hiện tại ra file JSON.</p>
+        <button class="primary" id="exportBtn">Xuất backup</button>
+      </div>
+      <div class="card row">
+        <h4>Nhập dữ liệu</h4>
+        <p>Khôi phục dữ liệu từ file JSON đã xuất trước đó.</p>
+        <input type="file" id="importFile" accept="application/json">
+      </div>
+      <div class="card row">
+        <h4>Ghi chú kỹ thuật</h4>
+        <div class="note">Phiên bản này cố tình không dùng Service Worker để tránh tình trạng cache khiến bạn nhìn thấy bản cũ. App vẫn sẽ cố gắng hủy đăng ký Service Worker cũ nếu có, nhưng trước khi cập nhật bạn vẫn nên hard refresh.</div>
+      </div>
+    </div>
+  `);
+}
+
+function taskTypeLabel(t) {
+  return ({ choice: 'Chọn đáp án', tf: 'Đúng / Sai', cloze: 'Điền từ', short: 'Trả lời ngắn', order: 'Sắp xếp câu', match: 'Ghép cặp' })[t.type] || 'Bài tập';
+}
+
+function renderPracticeTask(t) {
+  const saved = state.answers[state.idx];
+  let body = '';
+
+  if (t.type === 'choice' || t.type === 'tf') {
+    const options = t.type === 'tf' ? ['Đúng', 'Sai'] : t.options;
+    body = `<div class="options">${options.map((o, i) => `
+      <button class="option ${saved === i ? 'selected' : ''}" data-choice="${i}">
+        <span class="dot">${saved === i ? '●' : ''}</span><span>${esc(o)}</span>
+      </button>`).join('')}</div>`;
+  }
+
+  if (t.type === 'cloze' || t.type === 'short') {
+    const bank = t.bank ? `<div class="choice-bank">${t.bank.map(x => `<button class="token" data-fill="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : '';
+    body = `<input class="input" id="inputAnswer" placeholder="Nhập câu trả lời…" value="${typeof saved === 'string' ? esc(saved) : ''}">${bank}`;
+  }
+
+  if (t.type === 'order') {
+    const selected = state.orderSel.length ? state.orderSel.map(i => `<button class="token" data-remove="${i}">${esc(t.words[i])} ×</button>`).join('') : 'Chọn từ bên dưới theo đúng thứ tự';
+    const bank = t.words.map((w, i) => `<button class="token ${state.orderSel.includes(i) ? 'used' : ''}" data-add="${i}" ${state.orderSel.includes(i) ? 'disabled' : ''}>${esc(w)}</button>`).join('');
+    body = `<div class="dropzone">${selected}</div><div class="choice-bank">${bank}</div>`;
+  }
+
+  if (t.type === 'match') {
+    const rights = (t._rights ||= t.pairs.map((p, i) => ({ id: i, txt: p[1] })).sort((a, b) => String(a.txt).localeCompare(String(b.txt))));
+    const left = t.pairs.map((p, i) => `<button class="match-item ${state.matchPairs.some(x => x[0] === i) ? 'done' : state.matchPick === i ? 'active' : ''}" data-left="${i}" ${state.matchPairs.some(x => x[0] === i) ? 'disabled' : ''}>${esc(p[0])}</button>`).join('');
+    const right = rights.map(r => `<button class="match-item ${state.matchPairs.some(x => x[1] === r.id) ? 'done' : ''}" data-right="${r.id}" ${state.matchPairs.some(x => x[1] === r.id) ? 'disabled' : ''}>${esc(r.txt)}</button>`).join('');
+    body = `<div class="match-grid"><div class="match-col">${left}</div><div class="match-col">${right}</div></div>`;
+  }
+
+  return `
+    <div class="card main-card">
+      <div class="practice-top">
+        <div class="breadcrumb">${taskTypeLabel(t).toUpperCase()}</div>
+        <div class="pill">${state.idx + 1}/${currentLesson().tasks.length}</div>
+      </div>
+      <div class="progressbar"><b style="width:${((state.idx + 1) / currentLesson().tasks.length) * 100}%"></b></div>
+      <h3 class="q-title">${esc(t.q)}</h3>
+      ${body}
+      <div class="practice-actions">
+        <button class="secondary" id="prevTask" ${state.idx === 0 ? 'disabled' : ''}>← Câu trước</button>
+        <button class="primary" id="submitTask">Nộp câu này</button>
+      </div>
+    </div>
+    <aside class="card side-card">
+      <div class="breadcrumb">Learning by doing</div>
+      <h3 style="font-size:34px;letter-spacing:-.03em;margin:14px 0 12px">Không chỉ làm quiz</h3>
+      <p class="subtitle" style="font-size:16px;line-height:1.75">Bộ luyện cố ý trộn nhận biết, truy xuất, ghép cặp, sắp xếp và tự điền. Mục tiêu là học để nhớ và dùng, không chỉ tick đúng vài câu.</p>
+      <div class="note">Đạt từ 80% trở lên để đánh dấu hoàn thành. Các lỗi sai sẽ được lưu vào lịch sử của bài.</div>
+    </aside>`;
+}
+
+function evaluateTask(t, answer) {
+  if (t.type === 'choice') return { ok: answer === t.answer, user: t.options[answer] || '—', correct: t.options[t.answer], reason: t.reason };
+  if (t.type === 'tf') {
+    const correctIndex = t.answer ? 0 : 1;
+    return { ok: answer === correctIndex, user: ['Đúng', 'Sai'][answer] || '—', correct: t.answer ? 'Đúng' : 'Sai', reason: t.reason };
+  }
+  if (t.type === 'cloze') {
+    const ok = String(answer || '').trim().toLowerCase() === String(t.answer).trim().toLowerCase();
+    return { ok, user: answer || '—', correct: t.answer, reason: t.reason };
+  }
+  if (t.type === 'short') {
+    const got = String(answer || '').trim().toLowerCase();
+    const list = (t.answers || []).map(x => String(x).trim().toLowerCase());
+    const ok = list.includes(got);
+    return { ok, user: answer || '—', correct: t.answers[0], reason: t.reason };
+  }
+  if (t.type === 'order') {
+    const built = (answer || []).map(i => t.words[i]);
+    const ok = JSON.stringify(built) === JSON.stringify(t.answer);
+    return { ok, user: built.join(' '), correct: t.answer.join(' '), reason: t.reason };
+  }
+  if (t.type === 'match') {
+    const good = (answer || []).filter(([l, r]) => l === r).length;
+    return { ok: good === t.pairs.length, user: `${good}/${t.pairs.length} cặp đúng`, correct: `${t.pairs.length}/${t.pairs.length} cặp đúng`, reason: t.reason, fraction: good / t.pairs.length };
+  }
+  return { ok: false, user: '—', correct: '—', reason: '' };
+}
+
+function resultSummary() {
+  const l = currentLesson();
+  const detailed = l.tasks.map((t, i) => evaluateTask(t, state.answers[i]));
+  let score = 0;
+  detailed.forEach(r => { score += r.fraction != null ? r.fraction : (r.ok ? 1 : 0); });
+  const percent = Math.round(score / l.tasks.length * 100);
+  return { percent, detailed };
+}
+
+function renderResult() {
+  const l = currentLesson();
+  const m = currentModule();
+  const res = resultSummary();
+  const pr = lessonProgress(l.id);
+  const log = res.detailed.map((r, i) => `
+    <div class="answer-item">
+      <div style="display:flex;justify-content:space-between;gap:10px"><strong>Câu ${i + 1}</strong><span class="${r.ok ? 'ok' : 'bad'}">${r.ok ? 'Đúng' : 'Sai'}</span></div>
+      <div class="small" style="margin-top:6px">Bạn chọn / trả lời: ${esc(r.user)}</div>
+      <div class="small">Đáp án đúng: ${esc(r.correct)}</div>
+      <div style="margin-top:8px;color:#55627b;line-height:1.65">${esc(r.reason)}</div>
+    </div>`).join('');
+
+  return appShell(`
+    <section class="lesson-head">
+      <a class="back-link" href="#" data-nav="modules">← ${esc(m.name)}</a>
+      <div class="module-badge">${esc(m.name)} · ${l.minutes} phút</div>
+      <div class="lesson-title">${esc(l.title)}</div>
+      <p class="lesson-hero">Kết quả của lần làm này. Bài được đánh dấu hoàn thành khi đạt từ 80% trở lên.</p>
+    </section>
+    <div class="tabs">
+      <button class="tab" data-tab="read">01 · Hiểu bài</button>
+      <button class="tab" data-tab="practice">02 · Thực hành</button>
+      <button class="tab active">03 · Kết quả</button>
+    </div>
+    <div class="lesson-layout">
+      <div class="card main-card">
+        <div class="result-box">
+          <div class="result-top">
+            <div>
+              <div class="breadcrumb">Result</div>
+              <div class="score">${res.percent}%</div>
+              <div class="small">Best trước đó: ${pr.best || 0}%</div>
+            </div>
+            <div class="pill">${res.percent >= 80 ? 'Hoàn thành' : 'Chưa đạt ngưỡng'}</div>
+          </div>
+          <div class="feedback">
+            <strong>${res.percent >= 80 ? 'Bạn đã đạt ngưỡng hoàn thành 🎉' : 'Cần làm lại hoặc ôn thêm'}</strong>
+            <div>${res.percent >= 80 ? 'App sẽ đánh dấu hoàn thành bài này. Tuy nhiên, để nhớ lâu, bạn vẫn nên quay lại ôn sau một khoảng thời gian.' : 'Hãy đọc lại phần hiểu bài, xem kỹ các câu sai và thử làm lại. Mục tiêu không chỉ là vượt điểm mà là hiểu bản chất.'}</div>
+          </div>
+          <div class="answer-log">${log}</div>
+          <div class="cta-row">
+            <button class="primary" id="redoLesson">Làm lại bài</button>
+            <button class="secondary" data-nav="modules">Quay về học phần</button>
+          </div>
+        </div>
+      </div>
+      <aside class="card side-card">
+        <div class="breadcrumb">Review next</div>
+        <h3 style="font-size:28px;letter-spacing:-.03em;margin:14px 0 12px">Gợi ý sau bài</h3>
+        <div class="note">Nếu bài vừa đạt, bạn nên tạo 1–2 câu mới bằng kiến thức vừa học. Nếu bài chưa đạt, ưu tiên đọc lại “lỗi thường gặp” và “ví dụ đúng / sai” trước khi làm lại.</div>
+      </aside>
+    </div>
+  `);
+}
+
+function renderLesson() {
+  const l = currentLesson();
+  const m = currentModule();
+  if (state.tab === 'result') return renderResult();
+
+  let body = '';
+  if (state.tab === 'read') {
+    const theory = l.read.map(block => `<div class="block"><h4>${esc(block[0])}</h4><p>${esc(block[1])}</p></div>`).join('');
+    const examples = l.examples.map(e => `<div class="ex"><span class="label">${esc(e[0])}</span><strong>${esc(e[1])}</strong></div>`).join('');
+    const checklist = l.checklist.map(x => `<li>${esc(x)}</li>`).join('');
+    const sources = (l.sourceLinks || []).map(s => `<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('');
+
+    body = `
+      <div class="card main-card">
+        <div class="breadcrumb">Learn with meaning</div>
+        <h3 style="font-size:36px;letter-spacing:-.03em;margin:12px 0 8px">Hiểu bài thật sự trước khi làm</h3>
+        <p class="subtitle" style="font-size:16px;line-height:1.8">Phần này được viết lại theo kiểu bài giảng cho người Việt: khái niệm → lỗi hay mắc → ví dụ đúng / sai → checklist tự hiểu. Không phải chỉ là vài dòng tóm tắt.</p>
+        <div class="read-intro">
+          <div class="read-tile"><strong>Mục tiêu của bài</strong><span>${esc(l.goal)}</span></div>
+          <div class="read-tile"><strong>Chuẩn hoàn thành</strong><span>Đạt từ 80% ở phần thực hành và hiểu được ít nhất các ý trong checklist.</span></div>
+        </div>
+        <div class="theory">${theory}</div>
+        <div class="examples"><h4>Ví dụ đúng / sai</h4><div class="example-grid">${examples}</div></div>
+        <div class="checklist examples"><h4>Checklist tự hiểu bài</h4><ul>${checklist}</ul></div>
+        <div class="cta-row"><button class="primary" id="goPractice">Bắt đầu bộ luyện ${l.tasks.length} hoạt động →</button></div>
+      </div>
+      <aside class="card side-card">
+        <div class="breadcrumb">Reference</div>
+        <h3 style="font-size:28px;letter-spacing:-.03em;margin:14px 0 12px">Nguồn học mình dùng</h3>
+        <div class="sources-list">${sources}</div>
+        <div class="note" style="margin-top:14px">Nội dung trong app là tự biên soạn để phù hợp với cách học của bạn, nhưng khung module và định hướng được rút từ các nguồn học uy tín thay vì nhặt ví dụ rời rạc.</div>
+      </aside>`;
+  } else {
+    body = renderPracticeTask(l.tasks[state.idx]);
+  }
+
+  return appShell(`
+    <section class="lesson-head">
+      <a class="back-link" href="#" data-nav="modules">← ${esc(m.name)}</a>
+      <div class="module-badge">${esc(m.name)} · ${l.minutes} phút</div>
+      <div class="lesson-title">${esc(l.title)}</div>
+      <p class="lesson-hero">${esc(l.hero)}</p>
+    </section>
+    <div class="tabs">
+      <button class="tab ${state.tab === 'read' ? 'active' : ''}" data-tab="read">01 · Hiểu bài</button>
+      <button class="tab ${state.tab === 'practice' ? 'active' : ''}" data-tab="practice">02 · Thực hành</button>
+      <button class="tab ${state.tab === 'result' ? 'active' : ''}" ${state.answers.length === l.tasks.length ? '' : 'disabled'} data-tab="result">03 · Kết quả</button>
+    </div>
+    <div class="lesson-layout">${body}</div>
+  `);
+}
+
+function render() {
+  const root = $('#root');
+  if (state.page === 'profiles') {
+    root.innerHTML = renderProfiles();
+    bindProfilePicker();
+    return;
+  }
+  if (state.page === 'overview') root.innerHTML = renderOverview();
+  if (state.page === 'modules') root.innerHTML = renderModules();
+  if (state.page === 'resources') root.innerHTML = renderResources();
+  if (state.page === 'settings') root.innerHTML = renderSettings();
+  if (state.page === 'lesson') root.innerHTML = renderLesson();
+  bindCommon();
+}
+
+function bindProfilePicker() {
+  $$('[data-pick]').forEach(el => {
+    el.onclick = () => {
+      state.profile = el.dataset.pick;
+      setPage('overview');
+    };
+  });
+}
+
+function bindCommon() {
+  $('#switchProfile')?.addEventListener('click', () => setPage('profiles'));
+  $$('[data-nav]').forEach(btn => btn.onclick = () => setPage(btn.dataset.nav));
+  $$('[data-open-lesson]').forEach(btn => btn.onclick = () => {
+    state.lessonId = btn.dataset.openLesson;
+    state.tab = 'read';
+    state.idx = 0;
+    state.answers = [];
+    state.orderSel = [];
+    state.matchPick = null;
+    state.matchPairs = [];
+    setPage('lesson');
+  });
+  $$('[data-tab]').forEach(btn => btn.onclick = () => {
+    if (!btn.disabled) {
+      state.tab = btn.dataset.tab;
+      render();
+    }
+  });
+  $('#goPractice')?.addEventListener('click', () => {
+    state.tab = 'practice';
+    render();
+  });
+  $('#exportBtn')?.addEventListener('click', exportData);
+  $('#importFile')?.addEventListener('change', importData);
+  $('#redoLesson')?.addEventListener('click', () => {
+    state.tab = 'practice';
+    state.idx = 0;
+    state.answers = [];
+    state.orderSel = [];
+    state.matchPick = null;
+    state.matchPairs = [];
+    render();
+  });
+  if (state.page === 'lesson' && state.tab === 'practice') bindPractice();
+}
+
+function bindPractice() {
+  const t = currentLesson().tasks[state.idx];
+  $$('[data-choice]').forEach(btn => btn.onclick = () => {
+    state.answers[state.idx] = Number(btn.dataset.choice);
+    render();
+  });
+  $$('[data-fill]').forEach(btn => btn.onclick = () => {
+    const inp = $('#inputAnswer');
+    if (inp) {
+      inp.value = btn.dataset.fill;
+      state.answers[state.idx] = btn.dataset.fill;
+    }
+  });
+  $('#inputAnswer')?.addEventListener('input', e => state.answers[state.idx] = e.target.value);
+  $$('[data-add]').forEach(btn => btn.onclick = () => {
+    state.orderSel.push(Number(btn.dataset.add));
+    render();
+  });
+  $$('[data-remove]').forEach(btn => btn.onclick = () => {
+    state.orderSel = state.orderSel.filter(x => x !== Number(btn.dataset.remove));
+    render();
+  });
+  $$('[data-left]').forEach(btn => btn.onclick = () => {
+    state.matchPick = Number(btn.dataset.left);
+    render();
+  });
+  $$('[data-right]').forEach(btn => btn.onclick = () => {
+    if (state.matchPick != null) {
+      state.matchPairs.push([state.matchPick, Number(btn.dataset.right)]);
+      state.matchPick = null;
+      render();
+    }
+  });
+  $('#prevTask')?.addEventListener('click', () => {
+    if (state.idx > 0) {
+      state.idx -= 1;
+      state.orderSel = [];
+      state.matchPick = null;
+      state.matchPairs = [];
+      render();
+    }
+  });
+  $('#submitTask')?.addEventListener('click', () => {
+    let answer = state.answers[state.idx];
+    if (t.type === 'order') answer = [...state.orderSel];
+    if (t.type === 'match') answer = [...state.matchPairs];
+
+    const valid = t.type === 'order'
+      ? answer?.length === t.words.length
+      : t.type === 'match'
+      ? answer?.length === t.pairs.length
+      : (t.type === 'cloze' || t.type === 'short')
+      ? String(answer || '').trim() !== ''
+      : answer !== undefined;
+
+    if (!valid) {
+      alert('Hãy trả lời đầy đủ trước khi tiếp tục.');
+      return;
+    }
+
+    state.answers[state.idx] = answer;
+    if (state.idx < currentLesson().tasks.length - 1) {
+      state.idx += 1;
+      state.orderSel = [];
+      state.matchPick = null;
+      state.matchPairs = [];
+      render();
+    } else {
+      const res = resultSummary();
+      const old = lessonProgress(currentLesson().id);
+      progress[currentLesson().id] = {
+        done: res.percent >= 80,
+        best: Math.max(old.best || 0, res.percent),
+        history: [...(old.history || []), { at: Date.now(), score: res.percent }]
+      };
+      saveState();
+      state.tab = 'result';
+      render();
+    }
+  });
+}
+
+async function exportData() {
+  const blob = new Blob([JSON.stringify({ progress, profile: state.profile }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lingua-os-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  const obj = JSON.parse(text);
+  progress = obj.progress || {};
+  state.profile = obj.profile || 'tho';
+  await saveState();
+  alert('Đã khôi phục dữ liệu.');
+  setPage('overview');
+}
+
+async function init() {
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) await r.unregister();
+    }
+  } catch (e) {}
+
+  const stored = await loadState();
+  if (stored) {
+    progress = stored.progress || {};
+    state.profile = stored.profile || 'tho';
+    state.page = 'overview';
+  }
+  render();
+}
+
+init();
