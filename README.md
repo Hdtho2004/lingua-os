@@ -14,3 +14,9 @@ Nguồn định hướng học liệu:
 - Cambridge English
 - HSK official
 - Chinese Grammar Wiki
+
+
+## v8
+- Mở app luôn vào màn hình chọn người học.
+- Làm gọn typography và overview.
+- Thiết kế lại landing page và workspace overview cho mềm và bớt thô hơn.

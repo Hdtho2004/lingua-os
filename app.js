@@ -135,21 +135,52 @@ function appShell(inner) {
 }
 
 function renderProfiles() {
-  const cards = data.profiles.map(p => `
-    <div class="card profile-card" data-pick="${p.id}">
-      <div class="big-avatar">${esc(p.emoji)}</div>
-      <h3>${esc(p.name)}</h3>
-      <p>${esc(p.subtitle)}</p>
-      <span class="tag">${esc(p.tag)}</span>
-    </div>`).join('');
+  const cards = data.profiles.map(p => {
+    const last = p.id === state.profile ? '<span class="mini-badge">Lần dùng gần nhất</span>' : '';
+    return `
+      <button class="card profile-card elevated" data-pick="${p.id}">
+        <div class="profile-card-top">
+          <div class="big-avatar">${esc(p.emoji)}</div>
+          ${last}
+        </div>
+        <h3>${esc(p.name)}</h3>
+        <p>${esc(p.subtitle)}</p>
+        <div class="profile-card-foot">
+          <span class="tag">${esc(p.tag)}</span>
+          <span class="enter-link">Vào không gian học →</span>
+        </div>
+      </button>`;
+  }).join('');
 
   return `
-    <section class="hero">
-      <div class="breadcrumb" style="margin-bottom:22px">Choose your space</div>
-      <h2>Ai đang học hôm nay?</h2>
-      <p class="subtitle">Trang đầu chỉ để chọn người học. Lộ trình của Thọ chỉ xuất hiện khi vào workspace riêng của Thọ, không hiện ở homepage chung.</p>
-    </section>
-    <div class="profile-pick">${cards}</div>`;
+    <div class="landing-shell">
+      <aside class="landing-brand">
+        <div class="brand">
+          <div class="logo">L</div>
+          <div>
+            <h1>lingua os.</h1>
+            <p>Learn with intention</p>
+          </div>
+        </div>
+        <div class="landing-note">
+          <div class="workspace">Personal learning space</div>
+          <h2>Một không gian học gọn, đẹp và tập trung.</h2>
+          <p>Chọn đúng người học trước. Mỗi workspace sẽ có học phần, tiến độ và dữ liệu ôn tập riêng để tránh rối.</p>
+        </div>
+      </aside>
+      <main class="landing-main">
+        <div class="landing-header">
+          <div class="breadcrumb">Lingua OS / Welcome</div>
+          <div class="date-plain">${fmtDate()}</div>
+        </div>
+        <section class="landing-hero">
+          <div class="eyebrow">Choose your learning space</div>
+          <h2>Ai đang học hôm nay?</h2>
+          <p class="subtitle">Bắt đầu bằng cách chọn đúng workspace. Lộ trình của Thọ chỉ hiện trong khu vực của Thọ, còn phần của Thương sẽ tách riêng để không bị rối.</p>
+        </section>
+        <div class="profile-pick refined">${cards}</div>
+      </main>
+    </div>`;
 }
 
 function renderOverview() {
@@ -163,23 +194,35 @@ function renderOverview() {
       </div>`).join('');
 
     return appShell(`
-      <section class="hero">
+      <section class="hero compact-hero">
+        <div class="eyebrow">Workspace overview</div>
         <h2>${esc(p.name)} học gì hôm nay?</h2>
-        <p class="subtitle">Lộ trình của Thọ chỉ hiển thị trong workspace riêng. Tập trung vào ít module nhưng học sâu: giải thích rõ, thực hành dày và ôn tập có bằng chứng.</p>
+        <p class="subtitle">Tập trung vào vài module cốt lõi, học sâu hơn, luyện dày hơn và theo dõi tiến độ rõ ràng hơn.</p>
       </section>
-      <div class="stat-strip">
-        <div class="card stat"><div class="k">Tỷ lệ thời gian</div><div class="v">72 / 48</div><div class="small">72 phút English · 48 phút Chinese</div></div>
-        <div class="card stat"><div class="k">Module trọng tâm</div><div class="v">4</div><div class="small">English Foundations, English in Context, Mandarin Foundations, Mandarin Daily Use</div></div>
-        <div class="card stat"><div class="k">Tiến độ lesson</div><div class="v">${doneCount}</div><div class="small">Số lesson đã hoàn thành</div></div>
+      <div class="overview-panel">
+        <div class="card focus-card">
+          <div class="focus-top">
+            <div>
+              <div class="k">Hôm nay nên bắt đầu từ đâu?</div>
+              <h3>Tiếp tục theo đúng nhịp 72 phút English · 48 phút Chinese</h3>
+              <p>Ưu tiên: English Foundations và Mandarin Foundations. Khi muốn học ngay, hãy vào học phần thay vì đọc quá nhiều thông tin ở trang tổng quan.</p>
+            </div>
+            <button class="primary" data-nav="modules">Vào học phần</button>
+          </div>
+        </div>
+        <div class="stat-strip refined-stats">
+          <div class="card stat"><div class="k">Tỷ lệ thời gian</div><div class="v">72 / 48</div><div class="small">72 phút English · 48 phút Chinese</div></div>
+          <div class="card stat"><div class="k">Module trọng tâm</div><div class="v">4</div><div class="small">English Foundations · English in Context · Mandarin Foundations · Mandarin Daily Use</div></div>
+          <div class="card stat"><div class="k">Tiến độ lesson</div><div class="v">${doneCount}</div><div class="small">Số lesson đã hoàn thành</div></div>
+        </div>
       </div>
-      <div class="section-title">
+      <div class="section-title compact-title">
         <div>
           <h3>Roadmap của Thọ</h3>
-          <p>Khung 12 tuần để gắn với app; sau này có thể mở rộng bằng tài liệu thật.</p>
+          <p>Khung 12 tuần để gắn với app. Hiển thị gọn hơn để trang tổng quan bớt nặng và dễ nhìn.</p>
         </div>
-        <button class="secondary" data-nav="modules">Vào học phần</button>
       </div>
-      <div class="grid-3">${roadmap}</div>
+      <div class="grid-3 roadmap-grid">${roadmap}</div>
     `);
   }
 
@@ -658,7 +701,7 @@ async function init() {
   if (stored) {
     progress = stored.progress || {};
     state.profile = stored.profile || 'tho';
-    state.page = 'overview';
+    state.page = 'profiles';
   }
   render();
 }
