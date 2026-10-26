@@ -14,6 +14,7 @@ const state = {
   corrections: []
 };
 let progress = {};
+let tutorChats = {tho: [], thuong: []};
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -42,7 +43,7 @@ async function saveState() {
   const db = await openDB();
   await new Promise((resolve, reject) => {
     const tx = db.transaction('kv', 'readwrite');
-    tx.objectStore('kv').put({ progress, profile: state.profile }, 'app-state');
+    tx.objectStore('kv').put({ progress, profile: state.profile, tutorChats }, 'app-state');
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
@@ -109,6 +110,7 @@ function appShell(inner) {
         <nav class="nav">
           <button class="${state.page === 'overview' ? 'active' : ''}" data-nav="overview">🏠 Tổng quan</button>
           <button class="${state.page === 'modules' ? 'active' : ''}" data-nav="modules">📚 Học phần</button>
+          <button class="${state.page === 'tutor' ? 'active' : ''}" data-nav="tutor">✧ AI Tutor</button>
           <button class="${state.page === 'resources' ? 'active' : ''}" data-nav="resources">🔎 Tài nguyên</button>
           <button class="${state.page === 'settings' ? 'active' : ''}" data-nav="settings">⚙️ Cài đặt</button>
         </nav>
@@ -138,6 +140,13 @@ function appShell(inner) {
         </div>
       </div>
       ${inner}
+      <nav class="mobile-nav" aria-label="Điều hướng chính">
+        <button data-nav="overview">⌂<span>Tổng quan</span></button>
+        <button data-nav="modules">▤<span>Học phần</span></button>
+        <button data-nav="tutor">✧<span>Tutor</span></button>
+        <button data-nav="resources">⌕<span>Tài nguyên</span></button>
+        <button data-nav="settings">⚙<span>Cài đặt</span></button>
+      </nav>
     </main>
   </div>`;
 }
@@ -303,10 +312,66 @@ function renderResources() {
   `);
 }
 
+
+function speakText(text, lang='en-US') {
+  if (!('speechSynthesis' in window)) { alert('Trình duyệt này không hỗ trợ phát âm.'); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang; u.rate = 0.83;
+  const voices = speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang.toLowerCase() === lang.toLowerCase()) || voices.find(v => v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));
+  if (match) u.voice = match;
+  speechSynthesis.speak(u);
+}
+function findLessonSupport(query) {
+  const q = query.toLocaleLowerCase('vi');
+  const ls = data.lessons.filter(l => modulesForProfile().some(m=>m.id===l.module));
+  const words = q.split(/\s+/).filter(x=>x.length>3);
+  const ranked = ls.map(l => {
+    const corpus = [l.title, l.goal, ...(l.read||[]).flat()].join(' ').toLocaleLowerCase('vi');
+    const score = words.reduce((n,w)=>n+(corpus.includes(w)?1:0),0) + (q.includes(l.title.toLocaleLowerCase('vi'))?4:0);
+    return {l,score};
+  }).sort((a,b)=>b.score-a.score);
+  return ranked[0]?.score>0 ? ranked[0].l : null;
+}
+function tutorResponse(query) {
+  const p=currentProfile();
+  if(p.id==='thuong') return 'Thương chưa có học liệu Y đa khoa được cung cấp trong app. Mình chưa thể trả lời câu hỏi chuyên môn có căn cứ. Hãy bổ sung giáo trình, đề cương và bài tập đã được kiểm chứng, hoặc dùng nút chuyển câu hỏi sang ChatGPT.';
+  const l=findLessonSupport(query);
+  if(!l) return 'Mình chưa tìm thấy phần tương ứng trong học liệu offline của Thọ. Bạn có thể mở học phần liên quan hoặc sao chép câu hỏi sang ChatGPT để nhận hướng dẫn chi tiết.';
+  const block=(l.read||[]).find(b => query.split(/\s+/).some(w=>w.length>3 && b.join(' ').toLocaleLowerCase('vi').includes(w.toLocaleLowerCase('vi')))) || l.read[0];
+  return `${l.title}\n\n${block[0]}: ${block[1]}\n\nBạn có thể mở bài “${l.title}” để xem toàn bộ giải thích và làm bộ thực hành.`;
+}
+function renderTutor() {
+  const p=currentProfile();
+  const chat=tutorChats[p.id]||[];
+  return appShell(`
+    <section class="hero compact-hero"><div class="eyebrow">Personal tutor</div><h2>Trợ lý học tập của ${esc(p.name)}</h2><p class="subtitle">Lịch sử riêng theo từng người. Chế độ miễn phí hiện tra cứu học liệu offline; chưa phải AI tạo sinh chạy trong website.</p></section>
+    <div class="tutor-layout"><section class="card tutor-main"><div class="tutor-top"><div class="tutor-mark">${profileIcon(p)}</div><div><strong>${esc(p.name)} Tutor</strong><span>Tra cứu bài học · Lưu cuộc trò chuyện riêng</span></div><button class="secondary" id="clearTutor">Cuộc trò chuyện mới</button></div>
+    <div class="tutor-thread" id="tutorThread" aria-live="polite">${chat.length?chat.map(m=>`<div class="tutor-bubble ${m.role}"><span>${m.role==='user'?'Bạn':'Trợ lý học liệu'}</span><p>${esc(m.text)}</p></div>`).join(''):`<div class="tutor-empty"><h3>Bạn muốn tìm hiểu điều gì?</h3><p>${p.id==='tho'?'Hỏi về bài ngữ pháp, từ vựng hoặc Pinyin hiện có.':'Sau khi bổ sung tài liệu Y đa khoa, trợ lý sẽ tra cứu học phần của Thương.'}</p></div>`}</div>
+    <form id="tutorForm" class="tutor-compose"><label for="tutorInput" class="sr-only">Câu hỏi</label><textarea id="tutorInput" rows="2" placeholder="Nhập câu hỏi của bạn…" maxlength="1200" required></textarea><button class="primary" type="submit">Gửi câu hỏi</button></form></section>
+    <aside class="card tutor-side"><div class="eyebrow">Chế độ hiện tại</div><h3>Trợ lý học liệu offline</h3><p>Không cần API key, không gửi lịch sử chat lên máy chủ. Câu trả lời được trích từ các bài đã có trong ứng dụng.</p><div class="note">Muốn hỏi AI tạo sinh thực sự, hãy sao chép câu hỏi rồi mở ChatGPT. Hai hồ sơ vẫn được giữ lịch sử độc lập trong IndexedDB của thiết bị này.</div><button id="copyTutor" class="secondary" style="width:100%;margin-top:12px">Sao chép câu hỏi gần nhất</button><a class="source-chip" href="https://chatgpt.com/" target="_blank" rel="noopener">Mở ChatGPT ↗</a></aside></div>`);
+}
+function bindTutor() {
+  $('#tutorForm')?.addEventListener('submit', async e=>{
+    e.preventDefault(); const field=$('#tutorInput'); const msg=field.value.trim(); if(!msg)return;
+    const id=state.profile;
+    tutorChats[id].push({role:'user',text:msg},{role:'assistant',text:tutorResponse(msg)});
+    await saveState(); render();
+    $('#tutorThread')?.scrollTo({top:999999,behavior:'smooth'});
+  });
+  $('#clearTutor')?.addEventListener('click',()=>{if(confirm('Tạo cuộc trò chuyện mới? Lịch sử cũ sẽ bị xóa khỏi hồ sơ này.')){tutorChats[state.profile]=[];saveState();render();}});
+  $('#copyTutor')?.addEventListener('click', async()=>{
+    const last=[...(tutorChats[state.profile]||[])].reverse().find(x=>x.role==='user');
+    if(!last){alert('Chưa có câu hỏi để sao chép.');return;}
+    try{await navigator.clipboard.writeText(last.text);alert('Đã sao chép câu hỏi.');}catch(e){alert('Trình duyệt không cho phép sao chép tự động.');}
+  });
+}
+
 function renderSettings() {
   return appShell(`
     <section class="hero">
-      <h2>Cài đặt & sao lưu</h2>
+      <h2>Cài đặt & sao lưu</h2><div class="pill">Lingua OS v11</div>
       <p class="subtitle">Để an toàn cho tiến độ học tập, bạn nên xuất bản sao lưu trước khi cập nhật phiên bản hoặc chuyển thiết bị.</p>
     </section>
     <div class="settings">
@@ -370,7 +435,7 @@ function renderPracticeTask(t) {
       </div>
       <div class="progressbar"><b style="width:${((state.idx + 1) / currentLesson().tasks.length) * 100}%"></b></div>
       ${t.passage ? `<div class="passage-box"><div class="passage-heading">${esc(t.passageTitle || 'Reading passage')}</div><p>${esc(t.passage)}</p></div>` : ''}
-      <h3 class="q-title">${esc(t.q)}</h3>
+      <h3 class="q-title">${esc(t.q)}</h3>${t.q && !/[À-ỹ]/.test(t.q) && !t.q.includes("Trong") ? `<button class="sound-btn" data-speak="${esc(t.q)}" data-lang="${currentLesson().module.startsWith('zh')?'zh-CN':'en-US'}">◖)) Nghe câu hỏi</button>` : ''}
       ${state.feedback ? renderImmediateFeedback(t) : body}
       <div class="practice-actions">
         ${state.feedback ? '' : '<button class="primary" id="submitTask">Kiểm tra đáp án</button>'}
@@ -524,7 +589,8 @@ function renderLesson() {
   let body = '';
   if (state.tab === 'read') {
     const theory = l.read.map(block => `<div class="block"><h4>${esc(block[0])}</h4><p>${esc(block[1])}</p></div>`).join('');
-    const examples = l.examples.map(e => `<div class="ex"><span class="label">${esc(e[0])}</span><strong>${esc(e[1])}</strong></div>`).join('');
+    const lang = l.module.startsWith('zh') ? 'zh-CN' : 'en-US';
+    const examples = l.examples.map(e => `<div class="ex"><span class="label">${esc(e[0])}</span><strong>${esc(e[1])}</strong><button type="button" class="sound-btn" data-speak="${esc(e[1])}" data-lang="${lang}" aria-label="Nghe phát âm">◖)) Nghe</button></div>`).join('');
     const checklist = l.checklist.map(x => `<li>${esc(x)}</li>`).join('');
     const sources = (l.sourceLinks || []).map(s => `<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join('');
 
@@ -578,6 +644,7 @@ function render() {
   if (state.page === 'overview') root.innerHTML = renderOverview();
   if (state.page === 'modules') root.innerHTML = renderModules();
   if (state.page === 'resources') root.innerHTML = renderResources();
+  if (state.page === 'tutor') root.innerHTML = renderTutor();
   if (state.page === 'settings') root.innerHTML = renderSettings();
   if (state.page === 'lesson') root.innerHTML = renderLesson();
   bindCommon();
@@ -616,6 +683,8 @@ function bindCommon() {
     state.tab = 'practice';
     render();
   });
+  if (state.page === 'tutor') bindTutor();
+  $$('[data-speak]').forEach(b=>b.addEventListener('click',()=>speakText(b.dataset.speak, b.dataset.lang || 'en-US')));
   $('#exportBtn')?.addEventListener('click', exportData);
   $('#importFile')?.addEventListener('change', importData);
   $('#redoLesson')?.addEventListener('click', () => {
@@ -689,7 +758,7 @@ function bindPractice() {
 }
 
 async function exportData() {
-  const blob = new Blob([JSON.stringify({ progress, profile: state.profile }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ progress, profile: state.profile, tutorChats }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'lingua-os-backup.json';
@@ -703,6 +772,7 @@ async function importData(e) {
   const text = await file.text();
   const obj = JSON.parse(text);
   progress = obj.progress || {};
+  tutorChats = {tho: obj.tutorChats?.tho || [], thuong: obj.tutorChats?.thuong || []};
   state.profile = obj.profile || 'tho';
   await saveState();
   alert('Đã khôi phục dữ liệu.');
@@ -720,6 +790,7 @@ async function init() {
   const stored = await loadState();
   if (stored) {
     progress = stored.progress || {};
+    tutorChats = {tho: Array.isArray(stored.tutorChats?.tho) ? stored.tutorChats.tho : [], thuong: Array.isArray(stored.tutorChats?.thuong) ? stored.tutorChats.thuong : []};
     state.profile = stored.profile || 'tho';
     state.page = 'profiles';
   }

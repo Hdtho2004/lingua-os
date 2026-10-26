@@ -1,8 +1,13 @@
-# Lingua OS v10 — Study at your own pace
+# Lingua OS v11 — Thọ & Thương
 
-- Bỏ chỉ tiêu thời gian hiển thị khỏi Learning Journey và Overview.
-- Người học trả lời một câu, nhận phản hồi ngay. Đáp sai phải hoàn thành câu sửa lỗi bằng cách nhập đúng đáp án trước khi đi tiếp.
-- Kết quả đánh giá dựa trên lần trả lời đầu tiên, không cộng điểm khi nhập lại đáp án.
-- Có lưu số lượng lỗi đã sửa trong lịch sử từng lần làm bài.
-- Giữ cơ sở dữ liệu IndexedDB `lingua-os-v7` để bảo toàn tiến độ các bản v7–v9; nên sao lưu trước khi cập nhật.
-- Ứng dụng cần deploy file index.html, app.js, content.js, styles.css trực tiếp tại root của GitHub repository.
+Web app tĩnh: GitHub Pages + IndexedDB, không có phí máy chủ.
+
+- Trang đầu: chọn Thọ/Thương, không hiển thị roadmap chung.
+- Mỗi người một mục Tutor với lịch sử hoàn toàn riêng. **Chế độ Tutor hiện tại chỉ tra cứu nội dung học có sẵn**, chưa phải LLM thật và chưa gửi dữ liệu lên dịch vụ bên ngoài. Có nút sao chép câu hỏi và mở ChatGPT nếu người học muốn.
+- Phát âm thử nghiệm bằng Web Speech API của trình duyệt cho ví dụ tiếng Anh và tiếng Trung; chất lượng, voice và khả năng offline phụ thuộc nền tảng. Không xem TTS là thước đo phát âm chuẩn Pinyin.
+- Giữ lại các bài học, 30 hoạt động/bài trong bộ mẫu, sửa sai bắt buộc của v10.
+- Giữ tên IndexedDB `lingua-os-v7` để không tự mất dữ liệu từ v7–v10. Sao lưu JSON trước khi cập nhật.
+- Bản v11 không đăng ký Service Worker; muốn hỗ trợ offline hoàn chỉnh và cập nhật tự động cần triển khai PWA/cache phiên bản có kiểm thử.
+
+## Triển khai
+Upload **các file bên trong thư mục này** vào root của repository (cùng cấp `index.html`). GitHub Pages: main / root.
