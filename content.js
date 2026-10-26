@@ -5,14 +5,14 @@ window.LINGUA_DATA = {
       "name": "Thọ",
       "subtitle": "English & Chinese",
       "tag": "72’ English · 48’ Chinese",
-      "emoji": "T"
+      "emoji": "文"
     },
     {
       "id": "thuong",
       "name": "Thương",
       "subtitle": "Y đa khoa",
       "tag": "Học theo học phần",
-      "emoji": "Th"
+      "emoji": "♡"
     }
   ],
   "modules": [
@@ -396,126 +396,172 @@ window.LINGUA_DATA = {
           "reason": "Learn là động từ thực hiện hành động."
         },
         {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “Subject” nghĩa là gì?",
-          "answers": [
-            "chủ ngữ",
-            "chủ ngữ"
+          "type": "choice",
+          "q": "Choose the correct order: time expression at the end.",
+          "options": [
+            "She every day learns Chinese.",
+            "She learns Chinese every day.",
+            "Learns she Chinese every day."
           ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
+          "answer": 1,
+          "reason": "Trong mẫu nhập môn, trạng từ thời gian thường đặt sau nội dung chính."
+        },
+        {
+          "type": "cloze",
+          "q": "They ___ books after class.",
+          "answer": "read",
+          "bank": [
+            "reads",
+            "read"
+          ],
+          "reason": "They đi cùng dạng nguyên mẫu read ở hiện tại đơn."
+        },
+        {
+          "type": "order",
+          "q": "Rebuild the sentence.",
+          "words": [
+            "at school",
+            "learn",
+            "We",
+            "English"
+          ],
+          "answer": [
+            "We",
+            "learn",
+            "English",
+            "at school"
+          ],
+          "reason": "Chủ ngữ We, động từ learn, tân ngữ English, nơi chốn at school."
+        },
+        {
+          "type": "choice",
+          "q": "In “My teacher speaks English”, which part is the subject?",
+          "options": [
+            "My teacher",
+            "speaks",
+            "English"
+          ],
+          "answer": 0,
+          "reason": "My teacher là chủ ngữ."
         },
         {
           "type": "tf",
-          "q": "“Subject” tương ứng với “chủ ngữ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
+          "q": "“He play football on Sundays” is grammatically correct.",
+          "answer": false,
+          "reason": "Hiện tại đơn với he thường cần plays."
+        },
+        {
+          "type": "cloze",
+          "q": "My sister ___ a student.",
+          "answer": "is",
+          "bank": [
+            "is",
+            "are"
+          ],
+          "reason": "She / My sister đi với is."
+        },
+        {
+          "type": "choice",
+          "q": "Where is the object in “I read books”?",
+          "options": [
+            "I",
+            "read",
+            "books"
+          ],
+          "answer": 2,
+          "reason": "Books là đối tượng của hành động read."
         },
         {
           "type": "short",
-          "q": "Nhắc lại nhanh: “Object” nghĩa là gì?",
+          "q": "Correct the verb: “She go to university.” → She ___ to university.",
           "answers": [
-            "tân ngữ",
-            "tân ngữ"
+            "goes"
           ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
+          "reason": "Go → goes sau she."
+        },
+        {
+          "type": "match",
+          "q": "Match parts to function",
+          "pairs": [
+            [
+              "He",
+              "subject"
+            ],
+            [
+              "writes",
+              "verb"
+            ],
+            [
+              "a letter",
+              "object"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
+        },
+        {
+          "type": "order",
+          "q": "Build a sentence with be.",
+          "words": [
+            "are",
+            "They",
+            "happy"
+          ],
+          "answer": [
+            "They",
+            "are",
+            "happy"
+          ],
+          "reason": "They + are + adjective."
+        },
+        {
+          "type": "choice",
+          "q": "Which sentence has a complete predicate?",
+          "options": [
+            "My friend English.",
+            "My friend studies English.",
+            "My friend studying."
+          ],
+          "answer": 1,
+          "reason": "Studies là động từ chính được chia đúng."
+        },
+        {
+          "type": "cloze",
+          "q": "The children ___ in Hanoi.",
+          "answer": "live",
+          "bank": [
+            "live",
+            "lives"
+          ],
+          "reason": "The children là số nhiều → live."
         },
         {
           "type": "tf",
-          "q": "“Object” tương ứng với “tân ngữ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
+          "q": "“English I learn” is the regular neutral word order in English.",
+          "answer": false,
+          "reason": "Trật tự trung tính thường là I learn English."
         },
         {
           "type": "short",
-          "q": "Nhắc lại nhanh: “I study English every day.” nghĩa là gì?",
+          "q": "Complete: I ___ English every morning.",
           "answers": [
-            "tôi học tiếng anh mỗi ngày.",
-            "Tôi học tiếng Anh mỗi ngày."
+            "study"
           ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
+          "reason": "I + study."
         },
         {
-          "type": "tf",
-          "q": "“I study English every day.” tương ứng với “Tôi học tiếng Anh mỗi ngày.”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “Verb” nghĩa là gì?",
-          "answers": [
-            "động từ",
-            "động từ"
+          "type": "order",
+          "q": "Build a sentence about work.",
+          "words": [
+            "at night",
+            "work",
+            "They"
           ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
-        },
-        {
-          "type": "tf",
-          "q": "“Verb” tương ứng với “động từ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “Complement” nghĩa là gì?",
-          "answers": [
-            "bổ ngữ",
-            "bổ ngữ"
+          "answer": [
+            "They",
+            "work",
+            "at night"
           ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
-        },
-        {
-          "type": "tf",
-          "q": "“Complement” tương ứng với “bổ ngữ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “Subject” nghĩa là gì?",
-          "answers": [
-            "chủ ngữ",
-            "chủ ngữ"
-          ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
-        },
-        {
-          "type": "tf",
-          "q": "“Subject” tương ứng với “chủ ngữ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “Object” nghĩa là gì?",
-          "answers": [
-            "tân ngữ",
-            "tân ngữ"
-          ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
-        },
-        {
-          "type": "tf",
-          "q": "“Object” tương ứng với “tân ngữ”.",
-          "answer": true,
-          "reason": "Củng cố liên kết giữa khái niệm và nghĩa."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “I study English every day.” nghĩa là gì?",
-          "answers": [
-            "tôi học tiếng anh mỗi ngày.",
-            "Tôi học tiếng Anh mỗi ngày."
-          ],
-          "hints": [],
-          "reason": "Đây là câu truy xuất nhanh để bạn nhớ chắc thuật ngữ."
+          "reason": "Subject + Verb + Adverbial."
         }
       ]
     },
@@ -795,126 +841,170 @@ window.LINGUA_DATA = {
           "reason": "Cấu trúc đúng là Does + she + like ...?"
         },
         {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “Do you study English?” dùng trong trường hợp nào?",
-          "answers": [
-            "bạn có học tiếng anh không?",
-            "Bạn có học tiếng Anh không?"
+          "type": "choice",
+          "q": "___ your brother like tea?",
+          "options": [
+            "Do",
+            "Does",
+            "Is"
           ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
+          "answer": 1,
+          "reason": "Your brother = he → Does."
+        },
+        {
+          "type": "cloze",
+          "q": "___ they live in Hanoi?",
+          "answer": "Do",
+          "bank": [
+            "Do",
+            "Does"
+          ],
+          "reason": "They → do."
         },
         {
           "type": "tf",
-          "q": "“Do you study English?” → “Bạn có học tiếng Anh không?”.",
-          "answer": true,
-          "reason": "Câu ôn tập nhanh."
+          "q": "“Does he likes music?” is correct.",
+          "answer": false,
+          "reason": "Sau does, dùng like chứ không dùng likes."
+        },
+        {
+          "type": "order",
+          "q": "Build a yes/no question.",
+          "words": [
+            "work",
+            "Does",
+            "she",
+            "here"
+          ],
+          "answer": [
+            "Does",
+            "she",
+            "work",
+            "here"
+          ],
+          "reason": "Does + she + base verb + adverbial."
         },
         {
           "type": "short",
-          "q": "Trích nhớ nhanh: “does” dùng trong trường hợp nào?",
+          "q": "Fill: Where ___ your sister work?",
           "answers": [
-            "dùng cho he/she/it",
-            "dùng cho he/she/it"
+            "does"
           ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
+          "reason": "Your sister = she → does."
+        },
+        {
+          "type": "choice",
+          "q": "Which answer goes with “Does it rain here?”",
+          "options": [
+            "Yes, it does.",
+            "Yes, it do.",
+            "Yes, it is."
+          ],
+          "answer": 0,
+          "reason": "Dùng does để trả lời câu hỏi có does."
+        },
+        {
+          "type": "match",
+          "q": "Choose the correct auxiliary",
+          "pairs": [
+            [
+              "I",
+              "do"
+            ],
+            [
+              "you",
+              "do"
+            ],
+            [
+              "he",
+              "does"
+            ],
+            [
+              "she",
+              "does"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
+        },
+        {
+          "type": "cloze",
+          "q": "What ___ “retain” mean?",
+          "answer": "does",
+          "bank": [
+            "does",
+            "do"
+          ],
+          "reason": "Retain là đối tượng được hỏi dưới dạng danh từ/từ được nhắc đến → does."
+        },
+        {
+          "type": "choice",
+          "q": "Which is a WH-question?",
+          "options": [
+            "Do you work?",
+            "Does he study?",
+            "Why does she leave early?"
+          ],
+          "answer": 2,
+          "reason": "Why là từ hỏi."
         },
         {
           "type": "tf",
-          "q": "“does” → “dùng cho he/she/it”.",
+          "q": "“Do you speak Chinese?” is a yes/no question.",
           "answer": true,
-          "reason": "Câu ôn tập nhanh."
+          "reason": "Có thể trả lời yes/no."
+        },
+        {
+          "type": "order",
+          "q": "Build a question.",
+          "words": [
+            "do",
+            "Where",
+            "they",
+            "live"
+          ],
+          "answer": [
+            "Where",
+            "do",
+            "they",
+            "live"
+          ],
+          "reason": "Where + do + they + base verb."
         },
         {
           "type": "short",
-          "q": "Trích nhớ nhanh: “Do you study English?” dùng trong trường hợp nào?",
+          "q": "Complete: ___ you know the answer?",
           "answers": [
-            "bạn có học tiếng anh không?",
-            "Bạn có học tiếng Anh không?"
+            "Do",
+            "do"
           ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
+          "reason": "You → Do."
+        },
+        {
+          "type": "choice",
+          "q": "Which sentence contains the correct main verb?",
+          "options": [
+            "Does she goes?",
+            "Does she go?",
+            "Does she going?"
+          ],
+          "answer": 1,
+          "reason": "Does + go."
+        },
+        {
+          "type": "cloze",
+          "q": "Does your father ___ here?",
+          "answer": "work",
+          "bank": [
+            "work",
+            "works"
+          ],
+          "reason": "Dùng work sau does."
         },
         {
           "type": "tf",
-          "q": "“Do you study English?” → “Bạn có học tiếng Anh không?”.",
+          "q": "You can ask “What does this word mean?”",
           "answer": true,
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “does” dùng trong trường hợp nào?",
-          "answers": [
-            "dùng cho he/she/it",
-            "dùng cho he/she/it"
-          ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
-        },
-        {
-          "type": "tf",
-          "q": "“does” → “dùng cho he/she/it”.",
-          "answer": true,
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “Do you study English?” dùng trong trường hợp nào?",
-          "answers": [
-            "bạn có học tiếng anh không?",
-            "Bạn có học tiếng Anh không?"
-          ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
-        },
-        {
-          "type": "tf",
-          "q": "“Do you study English?” → “Bạn có học tiếng Anh không?”.",
-          "answer": true,
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “does” dùng trong trường hợp nào?",
-          "answers": [
-            "dùng cho he/she/it",
-            "dùng cho he/she/it"
-          ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
-        },
-        {
-          "type": "tf",
-          "q": "“does” → “dùng cho he/she/it”.",
-          "answer": true,
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “Do you study English?” dùng trong trường hợp nào?",
-          "answers": [
-            "bạn có học tiếng anh không?",
-            "Bạn có học tiếng Anh không?"
-          ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
-        },
-        {
-          "type": "tf",
-          "q": "“Do you study English?” → “Bạn có học tiếng Anh không?”.",
-          "answer": true,
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Trích nhớ nhanh: “does” dùng trong trường hợp nào?",
-          "answers": [
-            "dùng cho he/she/it",
-            "dùng cho he/she/it"
-          ],
-          "hints": [],
-          "reason": "Hãy tự trả lời mà không nhìn bài."
+          "reason": "Đây là câu hỏi từ vựng chuẩn."
         }
       ]
     },
@@ -1012,7 +1102,9 @@ window.LINGUA_DATA = {
             "Her shoes"
           ],
           "answer": 0,
-          "reason": "Đoạn đọc nói rõ she records her mistakes."
+          "reason": "Đoạn đọc nói rõ she records her mistakes.",
+          "passage": "Mai studies English every morning. She reviews difficult expressions, records her mistakes, and practises speaking with friends. She wants to build a habit she can maintain over time.",
+          "passageTitle": "Reading · Mai’s study routine"
         },
         {
           "type": "cloze",
@@ -1103,7 +1195,9 @@ window.LINGUA_DATA = {
             "learn math"
           ],
           "answer": 0,
-          "reason": "Ngữ cảnh nói rõ mục tiêu học tiếng Anh."
+          "reason": "Ngữ cảnh nói rõ mục tiêu học tiếng Anh.",
+          "passage": "Mai studies English every morning. She reviews difficult expressions, records her mistakes, and practises speaking with friends. She wants to build a habit she can maintain over time.",
+          "passageTitle": "Reading · Mai’s study routine"
         },
         {
           "type": "match",
@@ -1161,8 +1255,8 @@ window.LINGUA_DATA = {
             "maintain a habit",
             "sustain a habit in beginner English"
           ],
-          "answer": 1,
-          "reason": "Cả hai có thể hiểu, nhưng ở mức cơ bản maintain a habit là lựa chọn tự nhiên hơn."
+          "answer": 0,
+          "reason": "Maintain a habit là cách dùng thường gặp, phù hợp ngữ cảnh câu hỏi. Sustain a habit cũng có thể dùng trong ngữ cảnh cụ thể, nên không coi nó là tuyệt đối sai."
         },
         {
           "type": "cloze",
@@ -1181,128 +1275,179 @@ window.LINGUA_DATA = {
           "reason": "Đó là mục tiêu của lesson này."
         },
         {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “make a decision” nghĩa là gì?",
-          "answers": [
-            "đưa ra quyết định",
-            "đưa ra quyết định"
+          "type": "choice",
+          "q": "Which collocation is standard?",
+          "options": [
+            "do progress",
+            "make progress",
+            "take progress"
           ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
+          "answer": 1,
+          "reason": "Make progress là collocation phổ biến."
+        },
+        {
+          "type": "cloze",
+          "q": "We need to ___ a decision.",
+          "answer": "make",
+          "bank": [
+            "make",
+            "do"
+          ],
+          "reason": "Make a decision."
+        },
+        {
+          "type": "choice",
+          "q": "Choose the natural phrase.",
+          "options": [
+            "retain a customer",
+            "retain a breakfast",
+            "retain a homework"
+          ],
+          "answer": 0,
+          "reason": "Retain a customer = giữ chân khách hàng."
         },
         {
           "type": "tf",
-          "q": "“make a decision” tương ứng với “đưa ra quyết định”.",
+          "q": "Collocations can depend on context.",
           "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
+          "reason": "Các kết hợp tự nhiên phụ thuộc nghĩa và ngữ cảnh."
+        },
+        {
+          "type": "order",
+          "q": "Build a correct sentence.",
+          "words": [
+            "maintain",
+            "We",
+            "good habits"
+          ],
+          "answer": [
+            "We",
+            "maintain",
+            "good habits"
+          ],
+          "reason": "Maintain good habits là tự nhiên."
+        },
+        {
+          "type": "cloze",
+          "q": "This exercise helps me ___ vocabulary.",
+          "answer": "retain",
+          "bank": [
+            "retain",
+            "sustain"
+          ],
+          "reason": "Retain vocabulary = giữ được từ vựng trong trí nhớ."
+        },
+        {
+          "type": "choice",
+          "q": "What is the main goal of Mai’s routine?",
+          "options": [
+            "To stop studying",
+            "To maintain a learning habit",
+            "To buy shoes"
+          ],
+          "answer": 1,
+          "reason": "Mai muốn xây thói quen có thể duy trì.",
+          "passage": "Mai studies English every morning. She reviews difficult expressions, records her mistakes, and practises speaking with friends. She wants to build a habit she can maintain over time.",
+          "passageTitle": "Reading · Mai’s study routine"
+        },
+        {
+          "type": "choice",
+          "q": "In the passage, who does Mai practise speaking with?",
+          "options": [
+            "Her friends",
+            "Her neighbours",
+            "Her teachers"
+          ],
+          "answer": 0,
+          "reason": "She practises speaking with friends.",
+          "passage": "Mai studies English every morning. She reviews difficult expressions, records her mistakes, and practises speaking with friends. She wants to build a habit she can maintain over time.",
+          "passageTitle": "Reading · Mai’s study routine"
+        },
+        {
+          "type": "match",
+          "q": "Match verbs to natural collocations",
+          "pairs": [
+            [
+              "make",
+              "a decision"
+            ],
+            [
+              "maintain",
+              "a habit"
+            ],
+            [
+              "sustain",
+              "growth"
+            ],
+            [
+              "retain",
+              "information"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
         },
         {
           "type": "short",
-          "q": "Nhắc lại nhanh: “sustain growth” nghĩa là gì?",
+          "q": "Complete the phrase: make ___",
           "answers": [
-            "duy trì tăng trưởng",
-            "duy trì tăng trưởng"
+            "progress"
           ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
+          "reason": "Make progress là cụm tự nhiên."
         },
         {
           "type": "tf",
-          "q": "“sustain growth” tương ứng với “duy trì tăng trưởng”.",
+          "q": "“Make a decision” is a common collocation.",
           "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
+          "reason": "Đúng."
+        },
+        {
+          "type": "cloze",
+          "q": "Healthy sleep helps you ___ information.",
+          "answer": "retain",
+          "bank": [
+            "retain",
+            "contain"
+          ],
+          "reason": "Retain information mô tả khả năng ghi nhớ."
+        },
+        {
+          "type": "choice",
+          "q": "What should you check besides a word’s translation?",
+          "options": [
+            "Its collocations and context",
+            "Its colour",
+            "Only its first letter"
+          ],
+          "answer": 0,
+          "reason": "Nên học từ trong ngữ cảnh cùng các cụm đi kèm."
+        },
+        {
+          "type": "order",
+          "q": "Order the words.",
+          "words": [
+            "information",
+            "retain",
+            "I",
+            "better"
+          ],
+          "answer": [
+            "I",
+            "retain",
+            "information",
+            "better"
+          ],
+          "reason": "Câu diễn tả ghi nhớ tốt hơn."
         },
         {
           "type": "short",
-          "q": "Nhắc lại nhanh: “make a decision” nghĩa là gì?",
+          "q": "Complete: ___ growth",
           "answers": [
-            "đưa ra quyết định",
-            "đưa ra quyết định"
+            "sustain"
           ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
-        },
-        {
-          "type": "tf",
-          "q": "“make a decision” tương ứng với “đưa ra quyết định”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “sustain growth” nghĩa là gì?",
-          "answers": [
-            "duy trì tăng trưởng",
-            "duy trì tăng trưởng"
-          ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
-        },
-        {
-          "type": "tf",
-          "q": "“sustain growth” tương ứng với “duy trì tăng trưởng”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “make a decision” nghĩa là gì?",
-          "answers": [
-            "đưa ra quyết định",
-            "đưa ra quyết định"
-          ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
-        },
-        {
-          "type": "tf",
-          "q": "“make a decision” tương ứng với “đưa ra quyết định”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “sustain growth” nghĩa là gì?",
-          "answers": [
-            "duy trì tăng trưởng",
-            "duy trì tăng trưởng"
-          ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
-        },
-        {
-          "type": "tf",
-          "q": "“sustain growth” tương ứng với “duy trì tăng trưởng”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “make a decision” nghĩa là gì?",
-          "answers": [
-            "đưa ra quyết định",
-            "đưa ra quyết định"
-          ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
-        },
-        {
-          "type": "tf",
-          "q": "“make a decision” tương ứng với “đưa ra quyết định”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ nhanh."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại nhanh: “sustain growth” nghĩa là gì?",
-          "answers": [
-            "duy trì tăng trưởng",
-            "duy trì tăng trưởng"
-          ],
-          "hints": [],
-          "reason": "Ôn lại collocation bằng truy xuất chủ động."
+          "reason": "Sustain growth là cách kết hợp phổ biến."
         }
-      ]
+      ],
+      "passage": "Mai studies English every morning. She reviews difficult expressions, records her mistakes, and practises speaking with friends. She wants to build a habit she can maintain over time."
     },
     {
       "id": "zh-pinyin-tones",
@@ -1565,126 +1710,176 @@ window.LINGUA_DATA = {
           "reason": "Pinyin dùng để ghi âm tiếng Quan thoại."
         },
         {
-          "type": "short",
-          "q": "Ôn nhanh: “ā” là gì?",
-          "answers": [
-            "thanh 1",
-            "thanh 1"
+          "type": "choice",
+          "q": "Which syllable has tone 2?",
+          "options": [
+            "mā",
+            "má",
+            "mǎ"
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
+          "answer": 1,
+          "reason": "Thanh 2 dùng dấu sắc."
+        },
+        {
+          "type": "cloze",
+          "q": "Dấu thanh 1 của “ma” là ___.",
+          "answer": "mā",
+          "bank": [
+            "mā",
+            "má"
+          ],
+          "reason": "Macron biểu thị thanh 1."
         },
         {
           "type": "tf",
-          "q": "“ā” ↔ “thanh 1”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
+          "q": "Pinyin and Chinese characters are exactly the same writing system.",
+          "answer": false,
+          "reason": "Pinyin ghi âm, chữ Hán ghi chữ."
+        },
+        {
+          "type": "match",
+          "q": "Pair examples with tone names",
+          "pairs": [
+            [
+              "mā",
+              "1"
+            ],
+            [
+              "má",
+              "2"
+            ],
+            [
+              "mǎ",
+              "3"
+            ],
+            [
+              "mà",
+              "4"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
         },
         {
           "type": "short",
-          "q": "Ôn nhanh: “ǎ” là gì?",
+          "q": "Write tone 4 of “ma”.",
           "answers": [
-            "thanh 3",
-            "thanh 3"
+            "mà"
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
+          "reason": "mà là thanh 4."
+        },
+        {
+          "type": "choice",
+          "q": "Which is tone 3?",
+          "options": [
+            "mǎ",
+            "mā",
+            "mà"
+          ],
+          "answer": 0,
+          "reason": "Dấu ǎ biểu thị thanh 3."
+        },
+        {
+          "type": "cloze",
+          "q": "Thanh điệu trong mǎ là thanh ___.",
+          "answer": "3",
+          "bank": [
+            "2",
+            "3"
+          ],
+          "reason": "Thanh 3."
+        },
+        {
+          "type": "order",
+          "q": "Order tones from 1 to 4",
+          "words": [
+            "má",
+            "mà",
+            "mā",
+            "mǎ"
+          ],
+          "answer": [
+            "mā",
+            "má",
+            "mǎ",
+            "mà"
+          ],
+          "reason": "Bốn thanh theo thứ tự."
         },
         {
           "type": "tf",
-          "q": "“ǎ” ↔ “thanh 3”.",
+          "q": "Tone 3 may sound different in connected speech.",
           "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
+          "reason": "Có hiện tượng biến điệu và biến thể thanh 3."
         },
         {
-          "type": "short",
-          "q": "Ôn nhanh: “Pinyin” là gì?",
-          "answers": [
-            "hệ thống ghi âm quan thoại",
-            "hệ thống ghi âm Quan thoại"
+          "type": "choice",
+          "q": "What is the best pronunciation practice?",
+          "options": [
+            "Only read romanization",
+            "Listen and imitate native audio",
+            "Ignore tones"
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“Pinyin” ↔ “hệ thống ghi âm Quan thoại”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
+          "answer": 1,
+          "reason": "Nghe và đối chiếu âm thanh mẫu rất quan trọng."
         },
         {
           "type": "short",
-          "q": "Ôn nhanh: “á” là gì?",
+          "q": "Which tone is indicated by á?",
           "answers": [
-            "thanh 2",
+            "2",
             "thanh 2"
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
+          "reason": "Dấu á biểu thị thanh 2."
         },
         {
-          "type": "tf",
-          "q": "“á” ↔ “thanh 2”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
-        },
-        {
-          "type": "short",
-          "q": "Ôn nhanh: “à” là gì?",
-          "answers": [
-            "thanh 4",
+          "type": "cloze",
+          "q": "Trong 妈妈, âm tiết thứ hai thường đọc ___.",
+          "answer": "nhẹ",
+          "bank": [
+            "nhẹ",
             "thanh 4"
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
+          "reason": "Thanh nhẹ."
+        },
+        {
+          "type": "choice",
+          "q": "What does Pinyin primarily represent?",
+          "options": [
+            "Mandarin pronunciation",
+            "English grammar",
+            "Chinese radicals"
+          ],
+          "answer": 0,
+          "reason": "Pinyin là hệ thống ghi âm."
         },
         {
           "type": "tf",
-          "q": "“à” ↔ “thanh 4”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
+          "q": "Vietnamese tones and Mandarin tones map one-to-one.",
+          "answer": false,
+          "reason": "Hai hệ thống thanh điệu không tương ứng hoàn toàn."
         },
         {
-          "type": "short",
-          "q": "Ôn nhanh: “ā” là gì?",
-          "answers": [
-            "thanh 1",
-            "thanh 1"
+          "type": "match",
+          "q": "Match tone marks",
+          "pairs": [
+            [
+              "ā",
+              "thanh 1"
+            ],
+            [
+              "á",
+              "thanh 2"
+            ],
+            [
+              "ǎ",
+              "thanh 3"
+            ],
+            [
+              "à",
+              "thanh 4"
+            ]
           ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“ā” ↔ “thanh 1”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
-        },
-        {
-          "type": "short",
-          "q": "Ôn nhanh: “ǎ” là gì?",
-          "answers": [
-            "thanh 3",
-            "thanh 3"
-          ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“ǎ” ↔ “thanh 3”.",
-          "answer": true,
-          "reason": "Kiểm tra ghi nhớ tức thời."
-        },
-        {
-          "type": "short",
-          "q": "Ôn nhanh: “Pinyin” là gì?",
-          "answers": [
-            "hệ thống ghi âm quan thoại",
-            "hệ thống ghi âm Quan thoại"
-          ],
-          "hints": [],
-          "reason": "Câu ôn tập nhanh."
+          "reason": "Hãy so sánh các cặp tương ứng."
         }
       ]
     },
@@ -1950,126 +2145,175 @@ window.LINGUA_DATA = {
           "reason": "你叫什么名字？ là cấu trúc chuẩn."
         },
         {
-          "type": "short",
-          "q": "Nhắc lại: “你好” nghĩa là gì?",
-          "answers": [
-            "xin chào",
-            "xin chào"
+          "type": "choice",
+          "q": "Which means “you”?",
+          "options": [
+            "我",
+            "你",
+            "是"
           ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
+          "answer": 1,
+          "reason": "你 = bạn."
+        },
+        {
+          "type": "cloze",
+          "q": "我___安。",
+          "answer": "叫",
+          "bank": [
+            "叫",
+            "是"
+          ],
+          "reason": "我叫安。 = Tôi tên An."
         },
         {
           "type": "tf",
-          "q": "“你好” ↔ “xin chào”.",
+          "q": "你 and 我 are pronouns.",
           "answer": true,
-          "reason": "Kiểm tra trí nhớ."
+          "reason": "你 = bạn, 我 = tôi."
+        },
+        {
+          "type": "order",
+          "q": "Build a self-introduction.",
+          "words": [
+            "叫",
+            "我",
+            "安"
+          ],
+          "answer": [
+            "我",
+            "叫",
+            "安"
+          ],
+          "reason": "我叫安。"
+        },
+        {
+          "type": "match",
+          "q": "Match the words",
+          "pairs": [
+            [
+              "我",
+              "tôi"
+            ],
+            [
+              "你",
+              "bạn"
+            ],
+            [
+              "叫",
+              "gọi là"
+            ],
+            [
+              "是",
+              "là"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
         },
         {
           "type": "short",
-          "q": "Nhắc lại: “你” nghĩa là gì?",
+          "q": "Write the character meaning “you”.",
           "answers": [
-            "bạn",
-            "bạn"
+            "你"
           ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
+          "reason": "你 = bạn."
+        },
+        {
+          "type": "choice",
+          "q": "What does 学生 mean?",
+          "options": [
+            "student",
+            "teacher",
+            "doctor"
+          ],
+          "answer": 0,
+          "reason": "学生 = học sinh/sinh viên."
+        },
+        {
+          "type": "cloze",
+          "q": "你___学生吗？",
+          "answer": "是",
+          "bank": [
+            "是",
+            "叫"
+          ],
+          "reason": "Bạn có phải học sinh/sinh viên không?"
         },
         {
           "type": "tf",
-          "q": "“你” ↔ “bạn”.",
+          "q": "“我叫…” is a way to introduce your name.",
           "answer": true,
-          "reason": "Kiểm tra trí nhớ."
+          "reason": "Đúng."
+        },
+        {
+          "type": "order",
+          "q": "Build the question.",
+          "words": [
+            "名字",
+            "你",
+            "叫",
+            "什么"
+          ],
+          "answer": [
+            "你",
+            "叫",
+            "什么",
+            "名字"
+          ],
+          "reason": "你叫什么名字？"
         },
         {
           "type": "short",
-          "q": "Nhắc lại: “我是学生。” nghĩa là gì?",
+          "q": "Complete: 我___学生。",
           "answers": [
-            "tôi là sinh viên",
-            "tôi là sinh viên"
+            "是"
           ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
+          "reason": "我是学生。"
+        },
+        {
+          "type": "choice",
+          "q": "Select a greeting.",
+          "options": [
+            "你好",
+            "我叫",
+            "学生"
+          ],
+          "answer": 0,
+          "reason": "你好 = xin chào."
+        },
+        {
+          "type": "match",
+          "q": "Match sentences",
+          "pairs": [
+            [
+              "我叫安",
+              "Tôi tên An"
+            ],
+            [
+              "我是学生",
+              "Tôi là sinh viên"
+            ],
+            [
+              "你好",
+              "Xin chào"
+            ]
+          ],
+          "reason": "Hãy so sánh các cặp tương ứng."
+        },
+        {
+          "type": "cloze",
+          "q": "___好！",
+          "answer": "你",
+          "bank": [
+            "你",
+            "我"
+          ],
+          "reason": "你好。"
         },
         {
           "type": "tf",
-          "q": "“我是学生。” ↔ “tôi là sinh viên”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại: “我” nghĩa là gì?",
-          "answers": [
-            "tôi",
-            "tôi"
-          ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“我” ↔ “tôi”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại: “我叫…” nghĩa là gì?",
-          "answers": [
-            "tôi tên là…",
-            "tôi tên là…"
-          ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“我叫…” ↔ “tôi tên là…”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại: “你好” nghĩa là gì?",
-          "answers": [
-            "xin chào",
-            "xin chào"
-          ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“你好” ↔ “xin chào”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại: “你” nghĩa là gì?",
-          "answers": [
-            "bạn",
-            "bạn"
-          ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
-        },
-        {
-          "type": "tf",
-          "q": "“你” ↔ “bạn”.",
-          "answer": true,
-          "reason": "Kiểm tra trí nhớ."
-        },
-        {
-          "type": "short",
-          "q": "Nhắc lại: “我是学生。” nghĩa là gì?",
-          "answers": [
-            "tôi là sinh viên",
-            "tôi là sinh viên"
-          ],
-          "hints": [],
-          "reason": "Tự truy xuất nhanh."
+          "q": "我是学生 means “You are a student”.",
+          "answer": false,
+          "reason": "我是学生 = Tôi là sinh viên."
         }
       ]
     }

@@ -84,6 +84,11 @@ function setPage(page, extra = {}) {
   saveState();
 }
 
+function profileIcon(p) {
+  if (p.id === 'thuong') return `<svg aria-hidden="true" viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 1 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/></svg>`;
+  return '<span lang="zh">文</span>';
+}
+
 function appShell(inner) {
   const p = currentProfile();
   return `
@@ -120,7 +125,7 @@ function appShell(inner) {
             <span class="chip-value">${fmtDate()}</span>
           </div>
           <button class="profile-btn" id="switchProfile">
-            <span class="avatar">${esc(p.emoji)}</span>
+            <span class="avatar">${profileIcon(p)}</span>
             <span class="profile-meta">
               <span class="profile-title">Workspace</span>
               <span class="profile-name">${esc(p.name)}</span>
@@ -136,11 +141,11 @@ function appShell(inner) {
 
 function renderProfiles() {
   const cards = data.profiles.map(p => {
-    const last = p.id === state.profile ? '<span class="mini-badge">Lần dùng gần nhất</span>' : '';
+    const last = '';
     return `
       <button class="card profile-card elevated" data-pick="${p.id}">
         <div class="profile-card-top">
-          <div class="big-avatar">${esc(p.emoji)}</div>
+          <div class="big-avatar">${profileIcon(p)}</div>
           ${last}
         </div>
         <h3>${esc(p.name)}</h3>
@@ -162,11 +167,7 @@ function renderProfiles() {
             <p>Learn with intention</p>
           </div>
         </div>
-        <div class="landing-note">
-          <div class="workspace">Personal learning space</div>
-          <h2>Một không gian học gọn, đẹp và tập trung.</h2>
-          <p>Chọn đúng người học trước. Mỗi workspace sẽ có học phần, tiến độ và dữ liệu ôn tập riêng để tránh rối.</p>
-        </div>
+        <div class="landing-simple">ENGLISH · 中文 · MEDICINE</div>
       </aside>
       <main class="landing-main">
         <div class="landing-header">
@@ -174,9 +175,9 @@ function renderProfiles() {
           <div class="date-plain">${fmtDate()}</div>
         </div>
         <section class="landing-hero">
-          <div class="eyebrow">Choose your learning space</div>
+          <div class="eyebrow">Learning spaces</div>
           <h2>Ai đang học hôm nay?</h2>
-          <p class="subtitle">Bắt đầu bằng cách chọn đúng workspace. Lộ trình của Thọ chỉ hiện trong khu vực của Thọ, còn phần của Thương sẽ tách riêng để không bị rối.</p>
+
         </section>
         <div class="profile-pick refined">${cards}</div>
       </main>
@@ -197,7 +198,7 @@ function renderOverview() {
       <section class="hero compact-hero">
         <div class="eyebrow">Workspace overview</div>
         <h2>${esc(p.name)} học gì hôm nay?</h2>
-        <p class="subtitle">Tập trung vào vài module cốt lõi, học sâu hơn, luyện dày hơn và theo dõi tiến độ rõ ràng hơn.</p>
+
       </section>
       <div class="overview-panel">
         <div class="card focus-card">
@@ -205,7 +206,7 @@ function renderOverview() {
             <div>
               <div class="k">Hôm nay nên bắt đầu từ đâu?</div>
               <h3>Tiếp tục theo đúng nhịp 72 phút English · 48 phút Chinese</h3>
-              <p>Ưu tiên: English Foundations và Mandarin Foundations. Khi muốn học ngay, hãy vào học phần thay vì đọc quá nhiều thông tin ở trang tổng quan.</p>
+
             </div>
             <button class="primary" data-nav="modules">Vào học phần</button>
           </div>
@@ -219,7 +220,7 @@ function renderOverview() {
       <div class="section-title compact-title">
         <div>
           <h3>Roadmap của Thọ</h3>
-          <p>Khung 12 tuần để gắn với app. Hiển thị gọn hơn để trang tổng quan bớt nặng và dễ nhìn.</p>
+
         </div>
       </div>
       <div class="grid-3 roadmap-grid">${roadmap}</div>
@@ -365,6 +366,7 @@ function renderPracticeTask(t) {
         <div class="pill">${state.idx + 1}/${currentLesson().tasks.length}</div>
       </div>
       <div class="progressbar"><b style="width:${((state.idx + 1) / currentLesson().tasks.length) * 100}%"></b></div>
+      ${t.passage ? `<div class="passage-box"><div class="passage-heading">${esc(t.passageTitle || 'Reading passage')}</div><p>${esc(t.passage)}</p></div>` : ''}
       <h3 class="q-title">${esc(t.q)}</h3>
       ${body}
       <div class="practice-actions">
@@ -374,8 +376,8 @@ function renderPracticeTask(t) {
     </div>
     <aside class="card side-card">
       <div class="breadcrumb">Learning by doing</div>
-      <h3 style="font-size:34px;letter-spacing:-.03em;margin:14px 0 12px">Không chỉ làm quiz</h3>
-      <p class="subtitle" style="font-size:16px;line-height:1.75">Bộ luyện cố ý trộn nhận biết, truy xuất, ghép cặp, sắp xếp và tự điền. Mục tiêu là học để nhớ và dùng, không chỉ tick đúng vài câu.</p>
+      <h3 style="font-size:23px;letter-spacing:-.03em;margin:14px 0 12px">Bộ luyện ${currentLesson().tasks.length} hoạt động</h3>
+      <p class="subtitle" style="font-size:14px;line-height:1.65">Đọc kỹ ngữ cảnh, tự trả lời và xem giải thích sau khi nộp.</p>
       <div class="note">Đạt từ 80% trở lên để đánh dấu hoàn thành. Các lỗi sai sẽ được lưu vào lịch sử của bài.</div>
     </aside>`;
 }
@@ -489,7 +491,7 @@ function renderLesson() {
       <div class="card main-card">
         <div class="breadcrumb">Learn with meaning</div>
         <h3 style="font-size:36px;letter-spacing:-.03em;margin:12px 0 8px">Hiểu bài thật sự trước khi làm</h3>
-        <p class="subtitle" style="font-size:16px;line-height:1.8">Phần này được viết lại theo kiểu bài giảng cho người Việt: khái niệm → lỗi hay mắc → ví dụ đúng / sai → checklist tự hiểu. Không phải chỉ là vài dòng tóm tắt.</p>
+
         <div class="read-intro">
           <div class="read-tile"><strong>Mục tiêu của bài</strong><span>${esc(l.goal)}</span></div>
           <div class="read-tile"><strong>Chuẩn hoàn thành</strong><span>Đạt từ 80% ở phần thực hành và hiểu được ít nhất các ý trong checklist.</span></div>
@@ -657,7 +659,7 @@ function bindPractice() {
       const res = resultSummary();
       const old = lessonProgress(currentLesson().id);
       progress[currentLesson().id] = {
-        done: res.percent >= 80,
+        done: old.done || res.percent >= 80,
         best: Math.max(old.best || 0, res.percent),
         history: [...(old.history || []), { at: Date.now(), score: res.percent }]
       };
@@ -693,7 +695,7 @@ async function init() {
   try {
     if ('serviceWorker' in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
-      for (const r of regs) await r.unregister();
+      for (const r of regs) if (r.scope.endsWith('/lingua-os/')) await r.unregister();
     }
   } catch (e) {}
 

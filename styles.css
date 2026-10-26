@@ -76,3 +76,16 @@ body{background:linear-gradient(180deg,#f7f9fd 0%,#f3f6fb 100%)}
 .section-title.compact-title{margin:24px 0 14px}.section-title h3{font-size:24px}.section-title p{font-size:15px}.roadmap-grid .module-card{padding:18px;border-radius:24px}.roadmap-grid .module-card p{font-size:15px;line-height:1.7}
 .primary,.secondary{padding:13px 18px;border-radius:16px}.secondary{background:#fff}
 @media (max-width:1100px){.landing-shell{grid-template-columns:1fr}.landing-brand{display:none}.landing-main,.content{padding:20px 16px 28px}.landing-hero h2,.hero h2{font-size:34px}.focus-top{flex-direction:column}.profile-name{font-size:20px}.landing-header,.topbar{flex-direction:column;align-items:flex-start}.toolbar{width:100%;justify-content:space-between}}
+
+/* v9: quiet landing, refined typography and guaranteed reading input */
+.landing-note{display:none}.landing-simple{font-size:11px;letter-spacing:.17em;color:#9fb4e0;font-weight:800}
+.landing-brand{justify-content:space-between}.landing-hero{padding:36px 0 8px}.landing-hero h2{font-size:40px;letter-spacing:-.045em}
+.profile-pick.refined{margin-top:20px;max-width:1180px}.profile-card.elevated{min-height:245px}.profile-card .big-avatar{background:#efecfe;color:#574fc2}
+.profile-card:nth-child(2) .big-avatar{background:#faeaf2;color:#ae598a}.profile-card:nth-child(2) .tag{background:#faeaf2;color:#ae598a}
+.profile-card h3{font-size:25px}.profile-card p{font-size:14px}.profile-card-foot{gap:10px}.profile-btn .avatar{font-size:20px}
+.profile-card:focus-visible,.profile-btn:focus-visible{outline:3px solid #767ee7;outline-offset:3px}
+.passage-box{background:#f2f6ff;border:1px solid #dfe7f6;border-radius:19px;padding:20px 22px;margin:0 0 22px}
+.passage-heading{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#5265b4;margin-bottom:9px}
+.passage-box p{margin:0;color:#2d405f;line-height:1.95;font-size:16px}
+.q-title{font-size:26px;letter-spacing:-.025em;line-height:1.35}.lesson-title{font-size:42px}.lesson-hero{font-size:17px}.hero h2{font-size:36px}
+@media(max-width:750px){.landing-hero{padding:20px 0 2px}.landing-hero h2{font-size:31px}.profile-card.elevated{min-height:0}.passage-box{padding:16px}.passage-box p{font-size:15px}.q-title{font-size:22px}.lesson-title{font-size:32px}}
